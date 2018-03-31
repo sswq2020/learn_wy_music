@@ -108,6 +108,10 @@ export default{
             this._setSliderWidth(true)
             this.silder.refresh()
         })
+    },
+    // 组件销毁时的生命周期，销毁一下定时器，释放内存是个好的编程习惯
+    destroyed() {
+        clearTimeout(this.timer)
     }
 }
 </script>
