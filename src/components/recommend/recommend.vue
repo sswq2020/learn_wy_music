@@ -1,12 +1,13 @@
 <template>
   <div class="recommend">
-    <scroll class="recommend-content" :data="discList">
+    <!-- 这里的ref是调用子组件的方法 -->
+    <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
         <div class="slider-wrapper" v-if="recommends.length">
             <slider>
                 <div v-for="(item,index) in recommends" :key="index">
                 <a :href="item.linkUrl">
-                    <img :src="item.picUrl"/>
+                    <img v-on:load="loadImage" :src="item.picUrl"/>
                 </a>
                 </div>
             </slider>  
@@ -38,11 +39,12 @@ export default {
         return {
             recommends: [],
             discList: []
-
         }
     },
     created () {
-        this._getRecommend()
+        setTimeout(() => {
+            this._getRecommend()
+        }, 2000)
         this._getDiscList()
     },
     methods: {
@@ -61,6 +63,12 @@ export default {
                     _this.discList = res.data.list
                 }
             })
+        },
+        loadImage() {
+            if (!this.checkLoaded) {
+                this.$refs.scroll.refresh()
+                this.checkLoaded = true
+            }
         }
     },
     components: {
