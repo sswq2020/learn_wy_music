@@ -2,6 +2,7 @@
   <div class="recommend">
     <!-- 这里的ref是调用子组件的方法 -->
     <scroll ref="scroll" class="recommend-content" :data="discList">
+        <!--BScroll只作用于第一个子元素DOM -->
       <div>
         <div class="slider-wrapper" v-if="recommends.length">
             <slider>
@@ -16,7 +17,7 @@
             <h1 class="list-title">热门歌单推荐</h1>
             <ul>
                 <li v-for="(item,index) in discList" class="item" :key="index">
-                    <div class="icon"><img width="60" height="60" :src="item.imgurl" ></div>
+                    <div class="icon"><img width="60" height="60" v-lazy="item.imgurl" ></div>
                     <div class="text">
                         <h2 class="name" v-html="item.creator.name"></h2>
                         <p class="desc" v-html="item.dissname"></p>
