@@ -19,7 +19,12 @@
           data: {
               type: Array, // BetterScroll在数据[主要是数组]变化时需要refresh
               default: null
+          },
+          listenScroll: {
+              type: Boolean,
+              default: false
           }
+
       },
       mounted() {
           setTimeout(() => {
@@ -33,6 +38,12 @@
                   probeType: this.probeType,
                   click: this.click
               })
+              if (this.listenScroll) {
+                  let this_ = this
+                  this_.scroll.on('scroll', (pos) => {
+                      this_.$emit('scroll', pos)
+                  })
+              }
           },
           enable() {
               this.scroll && this.scroll.enable()
@@ -42,6 +53,12 @@
           },
           refresh() {
               this.scroll && this.scroll.refresh()
+          },
+          scrollTo() {
+              this.scroll && this.scroll.scrollTo.apply(this.this.scroll, arguments)
+          },
+          scrollToElement() {
+              this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
           }
       },
       watch: {
