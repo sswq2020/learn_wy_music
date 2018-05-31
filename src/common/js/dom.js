@@ -13,7 +13,6 @@ export function hasClass(el, className) {
 }
 
 export function getData(el, name, val) {
-    debugger
     const prefix = 'data-'
     name = prefix + name
     if (val) {

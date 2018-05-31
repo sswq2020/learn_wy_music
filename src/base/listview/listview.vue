@@ -48,7 +48,18 @@
           font-size:$font-size-small
           &.current
             color:$color-theme
-
+      .list-fixed
+        position:absolute
+        top:0
+        left:0
+        width:100%
+        .fixed-title
+          height:30px
+          line-height:30px
+          padding-left:20px
+          font-size:12px
+          color:$color-text-l
+          background:$color-highlight-background
 </style>
 
 
@@ -70,6 +81,7 @@
               </ul>
           </li>
       </ul>
+      <!--touchstart和touchmove是移动端的事件-->
       <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove" >
           <ul>
               <li v-for="(item,index) in shortcutList" 
@@ -81,6 +93,9 @@
               </li>
           </ul>
       </div>
+      <div class="list-fixed" v-show="fixedTitle" ref="fixed">
+          <h1 class="fixed-title">{{fixedTitle}}</h1>
+      </div>
   </scroll>
 </template>
 
@@ -89,6 +104,7 @@ import Scroll from 'base/scroll/scroll'
 import { getData } from 'common/js/dom.js'
 
 const ANCHOR_HEIGHT = 18
+const TITLE_HEIGHT = 30
 export default {
     created() {
         this.touch = {} // 在vue里,都会被添加getter,setter.这里不需要观测
@@ -99,7 +115,8 @@ export default {
     data() {
         return {
             scrollY: -1,
-            currentIndex: 0
+            currentIndex: 0,
+            diff: -1
         }
     },
     props: {
@@ -113,6 +130,12 @@ export default {
             return this.data.map((group) => {
                 return group.title.substr(0, 1)
             })
+        },
+        fixedTitle() {
+            if (this.scrollY > 0) {
+                return ''
+            }
+            return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
         }
     },
     methods: {
@@ -136,6 +159,13 @@ export default {
             this.scrollY = pos.y
         },
         _scollTo(index) {
+            if (!index && index !== 0) return
+            if (index < 0) {
+                index = 0
+            } else if (index > this.listHeight.length - 2) {
+                index = this.listHeight.length - 2
+            }
+            // this.scrollY = -(this.listHeight[index])
             this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 300)
         },
         _calculateHeight() {
@@ -146,6 +176,7 @@ export default {
                 height = height + childrenList[i].clientHeight
                 this.listHeight.push(height)
             }
+            console.log(this.listHeight)
         }
 
     },
@@ -157,16 +188,43 @@ export default {
         },
         scrollY(newY, oldY) {
             const listHeight = this.listHeight
-            for (let i = 0; i < listHeight.length; i++) {
+            //  我这个方案还是有些弊端的,如果热门没有10个歌手,只有1个歌手,下拉过多,造成currentIndex为2,之后用官方方案
+            // for (let i = 0; i < listHeight.length; i++) {
+            //     let height1 = listHeight[i]
+            //     let height2 = listHeight[i + 1]
+            //     console.log(height1, height2)
+            //     if (height2 && height1 < Math.abs(newY) && Math.abs(newY) < height2) {
+            //         this.currentIndex = i
+            //         return
+            //     }
+            // }
+            // this.currentIndex = 0
+
+            // 当滚动到顶部,newY>0
+            if (newY > 0) {
+                this.currentIndex = 0
+                return
+            }
+            // 在中间部分滚动
+            for (let i = 0; i < listHeight.length - 1; i++) {
                 let height1 = listHeight[i]
                 let height2 = listHeight[i + 1]
-                console.log(height1, height2)
-                if (height2 && height1 < Math.abs(newY) && Math.abs(newY) < height2) {
+                if (height1 <= Math.abs(newY) && Math.abs(newY) < height2) {
                     this.currentIndex = i
-                    console.log(this.currentIndex)
+                    this.diff = height2 + newY
                     return
                 }
             }
+            // 当滚动到底部, 且-newY大于最后一个元素的上限
+            this.currentIndex = this.listHeight - 2
+        },
+        diff(newVal) {
+            let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+            if (this.fixedTop === fixedTop) {
+                return
+            }
+            this.fixedTop = fixedTop
+            this.$refs.fixed.style.transform = `translate3d(0px, ${fixedTop}px, 0px)`
         }
     },
     components: {
