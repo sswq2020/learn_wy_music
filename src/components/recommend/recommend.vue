@@ -70,7 +70,7 @@ export default {
             })
         },
         loadImage() {
-            if (!this.checkLoaded) {
+            if (!this.checkLoaded) { // 实际上只执行一次,原因是轮播图高度是一样的，只执行一次refresh即可
                 this.$refs.scroll.refresh()
                 this.checkLoaded = true
             }

@@ -71,10 +71,10 @@
           :probeType="probeType"
           @scroll="scroll">
       <ul>
-          <li v-for="(group,index) in data" :key="index" class="list-group" ref="listGroup">
+          <li v-for="(group,index) in data"  :key="index" class="list-group" ref="listGroup">
               <h2 class="list-group-title">{{group.title}}</h2>
               <ul>
-                  <li v-for="(item,index_2) in group.items" :key="index_2" class="list-group-item">
+                  <li v-for="(item,index_2) in group.items"  @click="selectItem(item)" :key="index_2" class="list-group-item">
                       <img class="avatar" v-lazy="item.avatar"/>
                       <span class="name">{{item.name}}</span>
                   </li>
@@ -177,6 +177,9 @@ export default {
                 this.listHeight.push(height)
             }
             console.log(this.listHeight)
+        },
+        selectItem(item) {
+            this.$emit('select', item)
         }
 
     },
