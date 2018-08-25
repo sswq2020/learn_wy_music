@@ -6,20 +6,37 @@
 
 <script>
 import {mapGetters} from 'vuex'
+import { getSingerList } from 'api/singer'
+import { ERR_OK } from 'api/config'
 export default {
     name: 'singer-detail',
     data() {
         return {
-
         }
     },
     created() {
-        console.log(this.singer)
+        this._getSingerList()
     },
     computed: {
         ...mapGetters([
             'singer'
         ])
+    },
+    methods: {
+        // _getSingerList() {
+        //     getSingerList(this.singer.id).then((res) => {
+        //         if (res.code === ERR_OK) {
+        //             console.log(res.data)
+        //         }
+        //     })
+        // }
+
+        async _getSingerList() {
+            const response = await getSingerList(this.singer.id)
+            if (response.code === ERR_OK) {
+                console.log(response.data)
+            }
+        }
     }
 
 }
