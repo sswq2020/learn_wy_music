@@ -6,16 +6,18 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import { getSingerList } from 'api/singer'
+import { getSingerDetail } from 'api/singer'
 import { ERR_OK } from 'api/config'
+import {createSong} from 'common/js/song.js'
 export default {
     name: 'singer-detail',
     data() {
         return {
+            songs: []
         }
     },
     created() {
-        this._getSingerList()
+        this._getDetail()
     },
     computed: {
         ...mapGetters([
@@ -23,19 +25,25 @@ export default {
         ])
     },
     methods: {
-        // _getSingerList() {
-        //     getSingerList(this.singer.id).then((res) => {
-        //         if (res.code === ERR_OK) {
-        //             console.log(res.data)
-        //         }
-        //     })
-        // }
-
-        async _getSingerList() {
-            const response = await getSingerList(this.singer.id)
-            if (response.code === ERR_OK) {
-                console.log(response.data)
+        async _getDetail() {
+            if (!this.singer.id) {
+                this.$router.push('/singer')
             }
+            const response = await getSingerDetail(this.singer.id)
+            if (response.code === ERR_OK) {
+                this.songs = this._noramlizeSongs(response.data.list)
+                console.log(this.songs)
+            }
+        },
+        _noramlizeSongs(list) {
+            let ret = []
+            list.forEach(item => {
+                let {musicData} = item
+                if (musicData.albummid && musicData.songid) {
+                    ret.push(createSong(musicData))
+                }
+            })
+            return ret
         }
     }
 
