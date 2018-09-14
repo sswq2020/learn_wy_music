@@ -39,7 +39,6 @@ export default {
             const response = await getSingerDetail(this.singer.id)
             if (response.code === ERR_OK) {
                 this.songs = this._noramlizeSongs(response.data.list)
-                console.log(this.songs)
             }
         },
         _noramlizeSongs(list) {

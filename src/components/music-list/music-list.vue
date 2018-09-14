@@ -84,7 +84,7 @@ export default {
     mounted() {
         this.imageHeight = this.$refs.bgImage.clientHeight
         this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT
-        this.$refs.list.$el.style.top = `${this.imageHeight}px`
+        this.$refs.list.$el.style.top = `${this.imageHeight}px`// vm.$el详细Vue实例使用的根DOM元素
     },
     watch: {
         scrollY(newY) {
@@ -154,7 +154,6 @@ export default {
     line-height:40px
     font-size:$font-size-large
     color:$color-text
-
   .bg-image
     position:relative
     width:100%
