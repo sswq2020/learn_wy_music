@@ -21,7 +21,7 @@
       class="list"
       ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs "></song-list>
+        <song-list @select="selectItem" :songs="songs "></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -36,6 +36,7 @@ import Scroll from 'base/scroll/scroll.vue'
 import SongList from 'base/song-list/song-list'
 import loading from 'base/loading/loading'
 import { prefixStyle } from 'common/js/dom.js'
+import {mapActions} from 'vuex'
 const RESERVED_HEIGHT = 40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
@@ -60,11 +61,20 @@ export default {
         }
     },
     methods: {
+        ...mapActions([
+            'selectPlay'
+        ]),
         scroll(pos) {
             this.scrollY = pos.y
         },
         back() {
             this.$router.back()
+        },
+        selectItem(song, index) {
+            this.selectPlay({
+                list: this.songs,
+                index: index
+            })
         }
     },
     computed: {
