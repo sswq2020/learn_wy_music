@@ -1,12 +1,11 @@
 <template>
   <div class="player" v-show="playlist.length>0">
+    <!-- <transition name="normal"> -->
     <transition name="normal"
                 @enter="enter"
                 @after-enter="afterEnter"
                 @leave="leave"
-                @after-leave="leaveEnter"
-
-
+                @after-leave="afterLeave"
     >
       <div class="normal-player" v-show="fullScreen">
         <div class="background">
@@ -21,7 +20,7 @@
         </div>
         <div class="middle">
           <div class="middle-l">
-            <div class="cd-wrapper">
+            <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
                 <img :src="currentSong.image" class="image">
               </div>
@@ -65,8 +64,8 @@
           </div>
         </div>
         <div class="text">
-          <h2 class="name"></h2>
-          <p class="desc"></p>
+          <h2 class="name" v-html="currentSong.name"></h2>
+          <p class="desc"v-html="currentSong.singer"></p>
         </div>
         <div class="control"></div>
       </div>
@@ -77,7 +76,10 @@
 
 <script type="text/ecmascript-6">
   import { mapGetters, mapMutations } from 'vuex'
-  import animations from 'create-keyframe-animation'
+  import animations from 'create-keyframe-animation' // 为什么要引入第三方的js动画库来写css3动画,因为需要实现知道动画下（x,y)坐标,但是这里是动态生成的，需要通过js获取
+  import { prefixStyle } from 'common/js/dom'
+  const transform = prefixStyle('transform')
+// const transitionDuration = prefixStyle('transitionDuration')
   export default {
       computed: {
           ...mapGetters([
@@ -98,16 +100,57 @@
               this.setFullScreen(true)
           },
           enter(el, done) {
+              const {x, y, scale} = this._getPosAndScale()
 
+              let animation = {
+                  0: {
+                      transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+                  },
+                  60: {
+                      transform: `translate3d(0, 0, 0) scale(1.1)`
+                  },
+                  100: {
+                      transform: `translate3d(0, 0, 0) scale(1)`
+                  }
+              }
+
+              animations.registerAnimation({
+                  name: 'move',
+                  animation,
+                  presets: {
+                      duration: 400,
+                      easing: 'linear'
+                  }
+              })
+
+              animations.runAnimation(this.$refs.cdWrapper, 'move', done)
           },
           afterEnter() {
-
+              animations.unregisterAnimation('move')
+              this.$refs.cdWrapper.style.animation = ''
           },
           leave(el, done) {
-
+              this.$refs.cdWrapper.style.transition = 'all 0.4s'
+              const {x, y, scale} = this._getPosAndScale()
+              this.$refs.cdWrapper.style[transform] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+              this.$refs.cdWrapper.addEventListener('transitionend', done)
           },
           afterLeave() {
-
+              this.$refs.cdWrapper.style.transition = ''
+              this.$refs.cdWrapper.style[transform] = ''
+          },
+          _getPosAndScale() {
+              const targetWidth = 40
+              const paddingLeft = 40
+              const paddingBottom = 30
+              const paddingTop = 80
+              const width = window.innerWidth * 0.8
+              const scale = targetWidth / width
+              const x = -(window.innerWidth / 2 - paddingLeft)
+              const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
+              return {
+                  x, y, scale
+              }
           }
       }
 
@@ -239,7 +282,7 @@
       transition all 0.4s
       .top,.bottom
         transition all 0.4s cubic-bezier(0.86,0.18,0.82,1.32)
-    &.normal-enter,&.normal-leave-top
+    &.normal-enter,&.normal-leave-to
       opacity 0
       .top
         transform  translate3d(0,-100px,0)
@@ -255,6 +298,10 @@
     width 100%
     height 60px
     background $color-highlight-background
+    &.mini-enter-active, &.mini-leave-active
+      transition all 0.4s
+    &.mini-enter,&.mini-leave-to
+      opacity 0
     .icon
       flex 0 0 40px
       width 40px
@@ -265,7 +312,6 @@
         width 100%
         img
          border-radius 50%
-
     .text
       display flex
       flex-direction column
@@ -273,6 +319,13 @@
       flex 1
       line-height 20px
       overflow hidden
+      .name
+        margin-bottom 2px
+        font-size $font-size-medium
+        color $color-text
+      .desc
+        font-size $font-size-small
+        color $color-text-d
     .control
       flex 0 0 30px
       width 30px
