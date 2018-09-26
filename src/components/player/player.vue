@@ -44,7 +44,7 @@
               <div class="icon-prev"></div>
             </div>
             <div class="icon i-center">
-              <div @click="togglePlaying" class="icon-play"></div>
+              <div @click="togglePlaying" :class="playIcon"></div>
             </div>
             <div class="icon i-right">
               <div class="icon-next"></div>
@@ -67,7 +67,9 @@
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc"v-html="currentSong.singer"></p>
         </div>
-        <div class="control"></div>
+        <div class="control">
+          <i :class="miniIcon" @click.stop="togglePlaying"></i>
+        </div>
       </div>
     </transition>
     <audio ref="audio" :src="currentSong.url"></audio>
@@ -89,7 +91,13 @@
               'playlist',
               'currentSong',
               'playing'
-          ])
+          ]),
+          playIcon() {
+              return this.playing ? 'icon-pause' : 'icon-play'
+          },
+          miniIcon() {
+              return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+          }
       },
       methods: {
           ...mapMutations(
@@ -168,7 +176,9 @@
           },
           playing(newPlaying) {
               const audio = this.$refs.audio // 将audio的DOM保存起来
-              newPlaying ? audio.play() : audio.pause()
+              setTimeout(() => {
+                  newPlaying ? audio.play() : audio.pause()
+              }, 20)
           }
       }
 
