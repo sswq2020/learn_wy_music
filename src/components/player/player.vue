@@ -44,7 +44,7 @@
               <div class="icon-prev"></div>
             </div>
             <div class="icon i-center">
-              <div class="icon-play"></div>
+              <div @click="togglePlaying" class="icon-play"></div>
             </div>
             <div class="icon i-right">
               <div class="icon-next"></div>
@@ -87,13 +87,15 @@
           ...mapGetters([
               'fullScreen',
               'playlist',
-              'currentSong'
+              'currentSong',
+              'playing'
           ])
       },
       methods: {
           ...mapMutations(
               {
-                  setFullScreen: 'SET_FULL_SCREEN'
+                  setFullScreen: 'SET_FULL_SCREEN',
+                  setPlayingState: 'SET_PLAYING_STATE'
               }),
           back() {
               this.setFullScreen(false)
@@ -153,6 +155,20 @@
               return {
                   x, y, scale
               }
+          },
+          togglePlaying() {
+              this.setPlayingState(!this.playing)
+          }
+      },
+      watch: {
+          currentSong() {
+              setTimeout(() => {
+                  this.$refs.audio.play() // 监听currentSong变化时,audio标签没有立刻渲染,可以使用$nextClick函数，但是用setTimeout更好
+              }, 20)
+          },
+          playing(newPlaying) {
+              const audio = this.$refs.audio // 将audio的DOM保存起来
+              newPlaying ? audio.play() : audio.pause()
           }
       }
 
