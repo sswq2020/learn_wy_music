@@ -90,7 +90,8 @@
               'fullScreen',
               'playlist',
               'currentSong',
-              'playing'
+              'playing',
+              'currentIndex'
           ]),
           playIcon() {
               return this.playing ? 'icon-pause' : 'icon-play'
@@ -106,7 +107,8 @@
           ...mapMutations(
               {
                   setFullScreen: 'SET_FULL_SCREEN',
-                  setPlayingState: 'SET_PLAYING_STATE'
+                  setPlayingState: 'SET_PLAYING_STATE',
+                  setCurrentIndex: 'SET_CURRENT_INDEX'
               }),
           back() {
               this.setFullScreen(false)
@@ -169,7 +171,18 @@
           },
           togglePlaying() {
               this.setPlayingState(!this.playing)
+          },
+          next() {
+              let index = this.currentIndex + 1 < this.playlist.length ? this.currentIndex + 1 : 0
+              this.setCurrentIndex(index)
+              !this.playing && this.togglePlaying() // 如果存在暂停状态,恢复播放状态
+          },
+          prev() {
+              let index = (this.currentIndex - 1 > -1) ? this.currentIndex - 1 : this.playlist.length - 1
+              this.setCurrentIndex(index)
+              !this.playing && this.togglePlaying()
           }
+
       },
       watch: {
           currentSong() {
