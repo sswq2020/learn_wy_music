@@ -22,7 +22,7 @@
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd">
-                <img :src="currentSong.image" class="image">
+                <img :src="currentSong.image" class="image" :class="cdCls">
               </div>
             </div>
             <div class="playing-lyric-wrapper">
@@ -41,13 +41,13 @@
               <div class="icon-sequence"></div>
             </div>
             <div class="icon i-left">
-              <div class="icon-prev"></div>
+              <div @click="prev"  class="icon-prev"></div>
             </div>
             <div class="icon i-center">
               <div @click="togglePlaying" :class="playIcon"></div>
             </div>
             <div class="icon i-right">
-              <div class="icon-next"></div>
+              <div @click="next" class="icon-next"></div>
             </div>
             <div class="icon i-right">
               <div class="icon-not-favorite"></div>
@@ -59,7 +59,7 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <div class="imgWrapper">
+          <div class="imgWrapper" :class="cdCls">
             <img :src="currentSong.image" width="40" height="40">
           </div>
         </div>
@@ -97,6 +97,9 @@
           },
           miniIcon() {
               return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+          },
+          cdCls() {
+              return this.playing ? 'play' : 'play pause'
           }
       },
       methods: {
@@ -268,6 +271,10 @@
               box-sizing border-box
               border-radius 50%
               border 10px solid  rgba(255, 255, 255, 0.1)
+              &.play
+                animation rotate 20s linear infinite
+              &.pause
+                animation-play-state paused
         .playing-lyric-wrapper
           width 80%
           margin 30px auto 0
@@ -338,6 +345,10 @@
       .imgWrapper
         height 100%
         width 100%
+        &.play
+          animation rotate 20s linear infinite
+        &.pause
+          animation-play-state paused
         img
          border-radius 50%
     .text
@@ -358,5 +369,10 @@
       flex 0 0 30px
       width 30px
       padding 0 10px
+  @keyframes rotate
+    0%
+     transform rotate(0)
+    100%
+     transform rotate(360deg)
 
 </style>
