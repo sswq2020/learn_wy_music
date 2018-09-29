@@ -35,7 +35,13 @@
           <div class="dot-wrapper">
             <span class="dot"></span>
           </div>
-          <div class="progress-wrapper"></div>
+          <div class="progress-wrapper">
+            <span class="time time-l">{{_format(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent"></progress-bar>
+            </div>
+            <span class="time time-r">{{_format(currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <div class="icon-sequence"></div>
@@ -73,7 +79,12 @@
       </div>
     </transition>
     <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件进行监听-->
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error"></audio>
+    <audio ref="audio"
+           :src="currentSong.url"
+           @timeupdate="updateTime"
+           @canplay="ready"
+           @error="error">
+    </audio>
 
 
   </div>
@@ -82,13 +93,15 @@
 <script type="text/ecmascript-6">
   import { mapGetters, mapMutations } from 'vuex'
   import animations from 'create-keyframe-animation' // 为什么要引入第三方的js动画库来写css3动画,因为需要实现知道动画下（x,y)坐标,但是这里是动态生成的，需要通过js获取
+  import ProgressBar from 'base/progress-bar/progress-bar'
   import { prefixStyle } from 'common/js/dom'
   const transform = prefixStyle('transform')
 // const transitionDuration = prefixStyle('transitionDuration')
   export default {
       data() {
           return {
-              songReady: false
+              songReady: false, // <aduio></aduio>里监听oncanplay事件,完成后才可点击
+              currentTime: 0
           }
       },
       computed: {
@@ -110,6 +123,9 @@
           },
           disableCls() {
               return this.songReady ? '' : 'disable'
+          },
+          percent() {
+              return (this.currentTime) / (this.currentSong.duration)
           }
       },
       methods: {
@@ -200,6 +216,23 @@
           },
           error() {
               this.songReady = true
+          },
+          updateTime(e) {
+              this.currentTime = e.target.currentTime
+          },
+          _format(interval) {
+              interval = interval | 0 // 向下取整
+              const minute = interval / 60 | 0
+              const second = this._pad(interval % 60)
+              return `${minute}:${second}`
+          },
+          _pad(num, n = 2) {
+              let len = num.toString().length
+              while (len < n) {
+                  num = '0' + num
+                  len++
+              }
+              return num
           }
       },
       watch: {
@@ -214,6 +247,9 @@
                   newPlaying ? audio.play() : audio.pause()
               }, 20)
           }
+      },
+      components: {
+          ProgressBar
       }
 
   }
@@ -331,6 +367,18 @@
         width 80%
         margin 0 auto
         padding 10px 0
+        .time
+          color $color-text
+          font-size $font-size-small
+          flex 0 0 30px
+          line-height 30px
+          width 30px
+          &.time-l
+            text-align left
+          &.time-r
+            text-align right
+        .progress-bar-wrapper
+          flex 1
       .operators
         display flex
         align-items center
