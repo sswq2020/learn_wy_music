@@ -41,13 +41,13 @@
               <div class="icon-sequence"></div>
             </div>
             <div class="icon i-left">
-              <div @click="prev"  class="icon-prev"></div>
+              <div @click="prev"  class="icon-prev" :class="disableCls"></div>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <div @click="togglePlaying" :class="playIcon"></div>
             </div>
             <div class="icon i-right">
-              <div @click="next" class="icon-next"></div>
+              <div @click="next" class="icon-next" :class="disableCls"></div>
             </div>
             <div class="icon i-right">
               <div class="icon-not-favorite"></div>
@@ -72,7 +72,8 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件进行监听-->
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error"></audio>
 
 
   </div>
@@ -85,6 +86,11 @@
   const transform = prefixStyle('transform')
 // const transitionDuration = prefixStyle('transitionDuration')
   export default {
+      data() {
+          return {
+              songReady: false
+          }
+      },
       computed: {
           ...mapGetters([
               'fullScreen',
@@ -101,6 +107,9 @@
           },
           cdCls() {
               return this.playing ? 'play' : 'play pause'
+          },
+          disableCls() {
+              return this.songReady ? '' : 'disable'
           }
       },
       methods: {
@@ -173,16 +182,25 @@
               this.setPlayingState(!this.playing)
           },
           next() {
+              if (!this.songReady) { return }
               let index = this.currentIndex + 1 < this.playlist.length ? this.currentIndex + 1 : 0
               this.setCurrentIndex(index)
               !this.playing && this.togglePlaying() // 如果存在暂停状态,恢复播放状态
+              this.songReady = false
           },
           prev() {
+              if (!this.songReady) { return }
               let index = (this.currentIndex - 1 > -1) ? this.currentIndex - 1 : this.playlist.length - 1
               this.setCurrentIndex(index)
               !this.playing && this.togglePlaying()
+              this.songReady = false
+          },
+          ready() {
+              this.songReady = true
+          },
+          error() {
+              this.songReady = true
           }
-
       },
       watch: {
           currentSong() {
