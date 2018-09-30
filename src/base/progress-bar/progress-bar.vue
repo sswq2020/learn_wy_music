@@ -65,7 +65,9 @@
           },
           // 派发事件
           _triggerPercent() {
-
+              const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
+              const percent = this.$refs.progress.clientWidth / barWidth
+              this.$emit('precentChange', percent)
           }
 
       },

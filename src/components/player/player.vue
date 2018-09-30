@@ -38,7 +38,7 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{_format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent"></progress-bar>
+              <progress-bar :percent="percent"  @precentChange="onProgressBarChange" ></progress-bar>
             </div>
             <span class="time time-r">{{_format(currentSong.duration)}}</span>
           </div>
@@ -217,8 +217,11 @@
           error() {
               this.songReady = true
           },
+          /**
+           * 监听<audio>的ontimeupdate事件
+           * **/
           updateTime(e) {
-              this.currentTime = e.target.currentTime
+              this.currentTime = e.target.currentTime // currentTime 属性返回视频/音频（audio/video）当前播放位置
           },
           _format(interval) {
               interval = interval | 0 // 向下取整
@@ -233,6 +236,13 @@
                   len++
               }
               return num
+          },
+          /**
+           * 监听自定义接受百分比事件,并赋值给<audio>里currentTime属性
+           * **/
+          onProgressBarChange(percent) {
+              console.log(percent)
+              this.$refs.audio.currentTime = this.currentSong.duration * percent
           }
       },
       watch: {
