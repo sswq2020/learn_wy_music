@@ -2,7 +2,12 @@
   <div class="progress-bar" ref="progressBar">
     <div class="bar-inner">
       <div class="progress" ref="progress"></div>
-      <div class="progress-btn-wrapper" ref="progressBtn">
+      <div class="progress-btn-wrapper"
+           ref="progressBtn"
+           @touchstart.prevent="progressTouchStart"
+           @touchmove.prevent="progressTouchMove"
+           @touchend="progressTouchEnd"
+      >
         <div class="progress-btn"></div>
       </div>
     </div>
@@ -20,13 +25,56 @@
               default: 0
           }
       },
+      created() {
+          this.touch = {} // 通过touch对象在三个监听事件中通信
+      },
+      methods: {
+          /**
+           * 触摸开始
+           * @param e  DOM事件绑定obj
+           * */
+          progressTouchStart(e) {
+              this.touch.initiated = true
+              this.touch.startX = e.touches[0].pageX // W3C中,移动事件很重要常见的属性事件
+              this.touch.left = this.$refs.progress.clientWidth
+          },
+          /**
+           * 滑动过程中
+           * @param e  DOM事件绑定obj
+           * */
+          progressTouchMove(e) {
+              if (!this.touch.initiated) {
+                  return
+              }
+              const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
+              const deltaX = e.touches[0].pageX - this.touch.startX
+              const offsetWidth = Math.min(barWidth, Math.max(0, this.touch.left + deltaX))
+              this._offset(offsetWidth)
+          },
+          /**
+           * 触摸结束
+           * @param e  DOM事件绑定obj
+           * */
+          progressTouchEnd(e) {
+              this.touch.initiated = false
+              this._triggerPercent()
+          },
+          _offset(offsetWidth) {
+              this.$refs.progress.style.width = `${offsetWidth}px`
+              this.$refs.progressBtn.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+          },
+          // 派发事件
+          _triggerPercent() {
+
+          }
+
+      },
       watch: {
           percent(newPercent) {
-              if (newPercent >= 0) {
+              if (newPercent >= 0 && !this.touch.initiated) { // 当触摸滑动和父级派发percent同时存在时,优先触摸滑动
                   const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
                   const offsetWidth = newPercent * barWidth
-                  this.$refs.progress.style.width = `${offsetWidth}px`
-                  this.$refs.progressBtn.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+                  this._offset(offsetWidth)
               }
           }
       }
