@@ -74,8 +74,15 @@
           <p class="desc"v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i :class="miniIcon" @click.stop="togglePlaying"></i>
+          <progress-circle :radius="radius" :percent="percent">
+            <i :class="miniIcon" class="icon-mini" @click.stop="togglePlaying"></i>
+          </progress-circle>
         </div>
+        <div class="control">
+          <div class="icon-playlist"></div>
+        </div>
+
+
       </div>
     </transition>
     <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件进行监听-->
@@ -94,6 +101,7 @@
   import { mapGetters, mapMutations } from 'vuex'
   import animations from 'create-keyframe-animation' // 为什么要引入第三方的js动画库来写css3动画,因为需要实现知道动画下（x,y)坐标,但是这里是动态生成的，需要通过js获取
   import ProgressBar from 'base/progress-bar/progress-bar'
+  import ProgressCircle from 'base/progress-circle/progress-circle'
   import { prefixStyle } from 'common/js/dom'
   const transform = prefixStyle('transform')
 // const transitionDuration = prefixStyle('transitionDuration')
@@ -101,7 +109,8 @@
       data() {
           return {
               songReady: false, // <aduio></aduio>里监听oncanplay事件,完成后才可点击
-              currentTime: 0
+              currentTime: 0,
+              radius: 32
           }
       },
       computed: {
@@ -262,7 +271,8 @@
           }
       },
       components: {
-          ProgressBar
+          ProgressBar,
+          ProgressCircle
       }
 
   }
@@ -461,6 +471,14 @@
       flex 0 0 30px
       width 30px
       padding 0 10px
+      .icon-play-mini, .icon-pause-mini, .icon-playlist
+        font-size 30px
+        color $color-theme-d
+      .icon-mini
+        font-size 32px
+        position absolute
+        left 0
+        top 0
   @keyframes rotate
     0%
      transform rotate(0)
