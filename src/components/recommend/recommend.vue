@@ -11,7 +11,7 @@
                     <img class="needsclick"   @load="loadImage" :src="item.picUrl"/>
                 </a>
                 </div>
-            </slider>  
+            </slider>
         </div>
         <div class="recommend-list">
             <h1 class="list-title">热门歌单推荐</h1>
@@ -53,21 +53,17 @@ export default {
         this._getDiscList()
     },
     methods: {
-        _getRecommend() {
-            let _this = this
-            getRecommend().then((res) => {
-                if (res.code === ERR_OK) {
-                    _this.recommends = res.data.slider
-                }
-            })
+        async _getRecommend() {
+            const res = await getRecommend()
+            if (res.code === ERR_OK) {
+                this.recommends = res.data.slider
+            }
         },
-        _getDiscList() {
-            let _this = this
-            getDiscList().then((res) => {
-                if (res.code === ERR_OK) {
-                    _this.discList = res.data.list
-                }
-            })
+        async _getDiscList() {
+            const res = await getDiscList()
+            if (res.code === ERR_OK) {
+                this.discList = res.data.list
+            }
         },
         loadImage() {
             if (!this.checkLoaded) { // 实际上只执行一次,原因是轮播图高度是一样的，只执行一次refresh即可
@@ -127,7 +123,7 @@ export default {
               margin-bottom: 10px
               color: #fff
             .desc
-              color: $color-text-d 
+              color: $color-text-d
       .loading-container
         position: absolute
         width: 100%
