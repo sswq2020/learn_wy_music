@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <!-- 这里的ref是调用子组件的方法 -->
     <scroll ref="scroll" class="recommend-content" :data="discList">
         <!--BScroll只作用于第一个子元素DOM -->
@@ -39,7 +39,9 @@ import Scroll from 'base/scroll/scroll'
 import loading from 'base/loading/loading'
 import {getRecommend, getDiscList} from 'api/recommend'
 import { ERR_OK } from 'api/config'
+import {playlistMixin} from 'common/js/mixin'
 export default {
+    mixins: [playlistMixin],
     data() {
         return {
             recommends: [],
@@ -70,6 +72,11 @@ export default {
                 this.$refs.scroll.refresh()
                 this.checkLoaded = true
             }
+        },
+        hanlePlaylist() {
+            const bottom = this.playlist.length > 0 ? '60px' : ''
+            this.$refs.recommend.style.bottom = bottom
+            this.$refs.scroll.refresh()
         }
     },
     components: {

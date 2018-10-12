@@ -64,8 +64,8 @@
 
 
 <template>
-  <scroll class="listview" 
-          :data="data" 
+  <scroll class="listview"
+          :data="data"
           ref="listview"
           :listenScroll="listenScroll"
           :probeType="probeType"
@@ -84,8 +84,8 @@
       <!--touchstart和touchmove是移动端的事件-->
       <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove" >
           <ul>
-              <li v-for="(item,index) in shortcutList" 
-                  :data-index="index" 
+              <li v-for="(item,index) in shortcutList"
+                  :data-index="index"
                   :key="index"
                   :class="{'current':currentIndex==index}"
                   class="item">
@@ -180,6 +180,9 @@ export default {
         },
         selectItem(item) {
             this.$emit('select', item)
+        },
+        refresh() {
+            this.$refs.listview.refresh()
         }
 
     },
