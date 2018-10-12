@@ -43,8 +43,8 @@
             <span class="time time-r">{{_format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <div class="icon-sequence"></div>
+            <div class="icon i-left" @click="changeMode">
+              <div :class="modeIcon"></div>
             </div>
             <div class="icon i-left">
               <div @click="prev"  class="icon-prev" :class="disableCls"></div>
@@ -88,6 +88,7 @@
     <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件进行监听-->
     <audio ref="audio"
            :src="currentSong.url"
+           @ended="end"
            @timeupdate="updateTime"
            @canplay="ready"
            @error="error">
@@ -103,6 +104,9 @@
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
   import { prefixStyle } from 'common/js/dom'
+  import { playMode } from 'common/js/config'
+  import { shuffle } from 'common/js/util'
+  console.log(playMode)
   const transform = prefixStyle('transform')
 // const transitionDuration = prefixStyle('transitionDuration')
   export default {
@@ -119,7 +123,10 @@
               'playlist',
               'currentSong',
               'playing',
-              'currentIndex'
+              'currentIndex',
+              'mode',
+              'sequenceList'
+
           ]),
           playIcon() {
               return this.playing ? 'icon-pause' : 'icon-play'
@@ -135,6 +142,9 @@
           },
           percent() {
               return (this.currentTime) / (this.currentSong.duration)
+          },
+          modeIcon() {
+              return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
           }
       },
       methods: {
@@ -142,7 +152,10 @@
               {
                   setFullScreen: 'SET_FULL_SCREEN',
                   setPlayingState: 'SET_PLAYING_STATE',
-                  setCurrentIndex: 'SET_CURRENT_INDEX'
+                  setCurrentIndex: 'SET_CURRENT_INDEX',
+                  setPlayMode: 'SET_PLAY_MODE',
+                  setPlayList: 'SET_PLAYLIST'
+
               }),
           back() {
               this.setFullScreen(false)
@@ -206,6 +219,24 @@
           togglePlaying() {
               this.setPlayingState(!this.playing)
           },
+          changeMode() {
+              const mode = (this.mode + 1) % 3
+              this.setPlayMode(mode)
+              let list = null
+              if (mode === playMode.random) {
+                  list = shuffle(this.sequenceList)
+              } else {
+                  list = this.sequenceList
+              }
+              this.resetCurrentIndex(list)
+              this.setPlayList(list)
+          },
+          resetCurrentIndex(list) {
+              let index = list.findIndex((item) => {
+                  return item.id === this.currentSong.id
+              })
+              this.setCurrentIndex(index)
+          },
           next() {
               if (!this.songReady) { return }
               let index = this.currentIndex + 1 < this.playlist.length ? this.currentIndex + 1 : 0
@@ -225,6 +256,16 @@
           },
           error() {
               this.songReady = true
+          },
+          end() {
+              if (this.mode === playMode.loop) {
+                  this.loop()
+              } else {
+                  this.next()
+              }
+          },
+          loop() {
+              this.$refs.audio.currentTime = 0
           },
           /**
            * 监听<audio>的ontimeupdate事件
@@ -258,7 +299,10 @@
           }
       },
       watch: {
-          currentSong() {
+          currentSong(newSong, oldSong) {
+              if (newSong.id === oldSong.id) {
+                  return
+              }
               setTimeout(() => {
                   this.$refs.audio.play() // 监听currentSong变化时,audio标签没有立刻渲染,可以使用$nextClick函数，但是用setTimeout更好
               }, 20)
