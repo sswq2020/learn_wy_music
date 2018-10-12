@@ -266,6 +266,7 @@
           },
           loop() {
               this.$refs.audio.currentTime = 0
+              this.$refs.audio.play()
           },
           /**
            * 监听<audio>的ontimeupdate事件

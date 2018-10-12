@@ -70,7 +70,12 @@
               this.$emit('precentChange', percent)
           },
           progressClick(e) {
-              const offsetWidth = e.offsetX
+              console.log(e)
+              // 这里当我们点击progresssBtn的时候,就是那个小圆圈按钮时,e.offsetX获取不对,请仔细看W3cshool的标准
+              // const offsetWidth = e.offsetX
+              const rect = this.$refs.progressBar.getBoundingClientRect()
+              console.log(rect)
+              const offsetWidth = e.pageX - rect.left
               this._offset(offsetWidth)
               this._triggerPercent()
           }
