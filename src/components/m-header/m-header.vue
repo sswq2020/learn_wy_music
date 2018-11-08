@@ -39,6 +39,5 @@
       .icon-mine
         display: block;
         padding: 12px
-        font-size: $font-size-small
         color: $color-theme
 </style>
