@@ -4,9 +4,9 @@
            <slot></slot>
        </div>
        <div class="dots">
-           <span class="dot" 
-                 v-for="(item,index) in dots" 
-                 :key="index" 
+           <span class="dot"
+                 v-for="(item,index) in dots"
+                 :key="index"
                  :class="{active: currentPageIndex===index}">
            </span>
        </div>
@@ -39,7 +39,7 @@ export default{
     },
     methods: {
         _setSliderWidth(isResize) {
-            this.sliderGroup = this.$refs.sliderGroup
+            this.sliderGroup = this.$refs.sliderGroup // 等价于document.querySelectorAll('.slider-grounp')
             this.children = this.sliderGroup.children
             let width = 0
             let sliderWidth = this.$refs.slider.clientWidth
@@ -137,13 +137,13 @@ export default{
           img
             display: block
             width: 100%
-      .dots   
+      .dots
         position: absolute
         right: 0
         left: 0
         bottom: 12px
         text-align: center
-        font-size: 0 
+        font-size: 0
         .dot
           display: inline-block
           margin: 0 4px
@@ -156,7 +156,7 @@ export default{
             border-radius: 5px
             background: $color-text-ll
 
-    
+
 </style>
 
 

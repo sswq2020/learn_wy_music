@@ -25,6 +25,9 @@ export default {
         this._getSingerList()
     },
     methods: {
+        ...mapMutations({
+            setSinger: 'SET_SINGER' // 相当于映射this.$store.commit('SET_SINGER',payload)
+        }),
         selectSinger(singer) {
             this.$router.push({
                 path: `/singer/${singer.id}`
@@ -72,9 +75,6 @@ export default {
             })
             return [...hot, ...ret]
         },
-        ...mapMutations({
-            setSinger: 'SET_SINGER' // 相当于映射this.$store.commit('SET_SINGER',payload)
-        }),
         hanlePlaylist() {
             const bottom = this.playlist.length > 0 ? '60px' : ''
             this.$refs.singer.style.bottom = bottom
