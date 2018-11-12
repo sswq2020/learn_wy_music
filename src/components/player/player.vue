@@ -5,8 +5,7 @@
                 @enter="enter"
                 @after-enter="afterEnter"
                 @leave="leave"
-                @after-leave="afterLeave"
-    >
+                @after-leave="afterLeave">
       <div class="normal-player" v-show="fullScreen">
         <div class="background">
           <img width="100%" height="100%" :src="currentSong.image">
@@ -85,7 +84,7 @@
 
       </div>
     </transition>
-    <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件进行监听-->
+    <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件oncanplay和onerror进行监听-->
     <audio ref="audio"
            :src="currentSong.url"
            @ended="end"
@@ -106,7 +105,6 @@
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
   import { shuffle } from 'common/js/util'
-  console.log(playMode)
   const transform = prefixStyle('transform')
 // const transitionDuration = prefixStyle('transitionDuration')
   export default {
@@ -148,15 +146,13 @@
           }
       },
       methods: {
-          ...mapMutations(
-              {
-                  setFullScreen: 'SET_FULL_SCREEN',
-                  setPlayingState: 'SET_PLAYING_STATE',
-                  setCurrentIndex: 'SET_CURRENT_INDEX',
-                  setPlayMode: 'SET_PLAY_MODE',
-                  setPlayList: 'SET_PLAYLIST'
-
-              }),
+          ...mapMutations({
+              setFullScreen: 'SET_FULL_SCREEN',
+              setPlayingState: 'SET_PLAYING_STATE',
+              setCurrentIndex: 'SET_CURRENT_INDEX',
+              setPlayMode: 'SET_PLAY_MODE',
+              setPlayList: 'SET_PLAYLIST'
+          }),
           back() {
               this.setFullScreen(false)
           },

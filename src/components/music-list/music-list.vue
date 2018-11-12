@@ -50,7 +50,7 @@ export default {
         },
         songs: {
             type: Array,
-            default: []
+            default: () => []
         },
         title: {
             type: String,
@@ -105,6 +105,7 @@ export default {
         this.listenScroll = true
     },
     mounted() {
+        console.log(this.$refs)
         this.imageHeight = this.$refs.bgImage.clientHeight
         this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT
         this.$refs.list.$el.style.top = `${this.imageHeight}px`// vm.$el详细Vue实例使用的根DOM元素
@@ -115,8 +116,7 @@ export default {
             let zIndex = 0 // 图片层级
             let scale = 1 // 图片缩放
             let blur = 0 // 高斯模糊,IOS设备
-            this.$refs.layer.style['transform'] = `translate3d(0,${translateY}px,0)`
-            this.$refs.layer.style['webkitTransform'] = `translate3d(0,${translateY}px,0)`
+            this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
             const percent = Math.abs(newY / this.minTranslateY)
             if (newY > 0) {
                 scale = 1 + percent
