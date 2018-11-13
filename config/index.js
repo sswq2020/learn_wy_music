@@ -21,7 +21,17 @@ const api = {
         // },
         pathRewrite: { '^/api/getDiscLists': '' },
         changeOrigin: true
-    }
+    },
+    _getLyric: {
+        context: '/api/lyric',
+        target: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
+        headers: {
+            referer: 'https://c.y.qq.com/',
+            host: 'c.y.qq.com'
+        },
+        pathRewrite: { '^/api/lyric': '' },
+        changeOrigin: true
+    },
 }
 
 module.exports = {
@@ -30,7 +40,8 @@ module.exports = {
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
         proxyTable: [
-            api._getDiscLists
+            api._getDiscLists,
+            api._getLyric
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
