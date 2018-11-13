@@ -105,6 +105,7 @@
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
   import { shuffle } from 'common/js/util'
+  import Lyric from 'lyric-parser' // 作者自己写的第三方库
   const transform = prefixStyle('transform')
 // const transitionDuration = prefixStyle('transitionDuration')
   export default {
@@ -112,7 +113,8 @@
           return {
               songReady: false, // <aduio></aduio>里监听oncanplay事件,完成后才可点击
               currentTime: 0,
-              radius: 32
+              radius: 32,
+              currentLyric: null
           }
       },
       computed: {
@@ -254,11 +256,7 @@
               this.songReady = true
           },
           end() {
-              if (this.mode === playMode.loop) {
-                  this.loop()
-              } else {
-                  this.next()
-              }
+              this.mode === playMode.loop ? this.loop() : this.next()
           },
           loop() {
               this.$refs.audio.currentTime = 0
@@ -293,6 +291,11 @@
               if (!this.playing) {
                   this.togglePlaying()
               }
+          },
+          async getLyric() {
+              const lyric = await (this.currentSong._getLyric())
+              this.currentLyric = new Lyric(lyric)
+              console.log(this.currentLyric)
           }
       },
       watch: {
@@ -302,6 +305,8 @@
               }
               setTimeout(() => {
                   this.$refs.audio.play() // 监听currentSong变化时,audio标签没有立刻渲染,可以使用$nextClick函数，但是用setTimeout更好
+                  this.getLyric()
+                  // const lyric = new Lyric(this.currentSong._getLyric())
               }, 20)
           },
           playing(newPlaying) {

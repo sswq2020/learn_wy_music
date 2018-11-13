@@ -74,7 +74,7 @@ export default {
             }
         },
         hanlePlaylist() {
-            const bottom = this.playlist.length > 0 ? '60px' : ''
+            const bottom = this.playlist.length > 0 ? '60px' : '' // 这里this.playlist为啥不需要mapGetters呢?
             this.$refs.recommend.style.bottom = bottom
             this.$refs.scroll.refresh()
         }
