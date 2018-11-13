@@ -17,22 +17,38 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
-          <div class="middle-l">
+        <div class="middle"
+             @touchstart.prevent="middleTouchStart"
+             @touchmove.prevent="middleTouchMove"
+             @touchend="middleTouchEnd"
+        >
+          <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
-                <img :src="currentSong.image" class="image" :class="cdCls">
+              <div class="cd" :class="cdCls">
+                <img :src="currentSong.image" class="image" >
               </div>
             </div>
             <div class="playing-lyric-wrapper">
               <div class="playing-lyric"></div>
             </div>
           </div>
-          <div class="middle-r"></div>
+          <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p ref="lyricLine"
+                   class="text"
+                   :class="{'current':currentLineNum === index}"
+                   v-for="(line,index) in currentLyric.lines">
+                   {{line.txt}}
+                </p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <span class="dot"></span>
+            <span class="dot" :class="{'active':currentShow ==='cd'}"></span>
+            <span class="dot" :class="{'active':currentShow ==='lyric'}"></span>
           </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{_format(currentTime)}}</span>
@@ -100,22 +116,29 @@
 <script type="text/ecmascript-6">
   import { mapGetters, mapMutations } from 'vuex'
   import animations from 'create-keyframe-animation' // 为什么要引入第三方的js动画库来写css3动画,因为需要实现知道动画下（x,y)坐标,但是这里是动态生成的，需要通过js获取
+  import Lyric from 'lyric-parser' // 作者自己写的第三方库
+  import Scroll from 'base/scroll/scroll'
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
   import { shuffle } from 'common/js/util'
-  import Lyric from 'lyric-parser' // 作者自己写的第三方库
+
   const transform = prefixStyle('transform')
-// const transitionDuration = prefixStyle('transitionDuration')
+  const transitionDuration = prefixStyle('transitionDuration')
   export default {
       data() {
           return {
               songReady: false, // <aduio></aduio>里监听oncanplay事件,完成后才可点击
               currentTime: 0,
               radius: 32,
-              currentLyric: null
+              currentLyric: null,
+              currentLineNum: 0,
+              currentShow: 'cd'
           }
+      },
+      created() {
+          this.touch = {}
       },
       computed: {
           ...mapGetters([
@@ -286,7 +309,6 @@
            * 监听自定义接受百分比事件,并赋值给<audio>里currentTime属性
            * **/
           onProgressBarChange(percent) {
-              console.log(percent)
               this.$refs.audio.currentTime = this.currentSong.duration * percent
               if (!this.playing) {
                   this.togglePlaying()
@@ -294,8 +316,79 @@
           },
           async getLyric() {
               const lyric = await (this.currentSong._getLyric())
-              this.currentLyric = new Lyric(lyric)
-              console.log(this.currentLyric)
+              this.currentLyric = new Lyric(lyric, this.handleLyric) // Lyric类第二个参数是回调函数
+              if (this.playing) {
+                  this.currentLyric.play() // Lyric类提供实例方式play
+              }
+          },
+          handleLyric({lineNum, txt}) {
+              this.currentLineNum = lineNum
+              const scrollList = this.$refs.lyricList
+              if (lineNum > 5) {
+                  let lineEl = this.$refs.lyricLine[lineNum - 5]
+                  scrollList.scrollToElement(lineEl, 1000) // scroll组件或者说scroll类提供的实例方法
+              } else {
+                  scrollList.scrollTo(0, 0, 1000)
+              }
+          },
+          middleTouchStart(e) {
+              this.touch.flag = true
+              const touched = e.touches[0]
+              this.touch.startX = touched.pageX
+              this.touch.startY = touched.pageY
+          },
+          middleTouchMove(e) {
+              if (!this.touch.flag) {
+                  return
+              }
+              const touched = e.touches[0]
+              const deltaX = touched.pageX - this.touch.startX
+              const deltaY = touched.pageY - this.touch.startY
+
+              if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                  return
+              }
+              const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+              const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+              this.touch.percent = Math.abs(offsetWidth) / window.innerWidth
+              // DOM的操作
+              const lyricListDom = this.$refs.lyricList.$el
+              const middleLDom = this.$refs.middleL
+              lyricListDom.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+              lyricListDom.style[transitionDuration] = 0
+              middleLDom.style.opacity = 1 - this.touch.percent
+              middleLDom.style[transitionDuration] = 0
+          },
+          middleTouchEnd() {
+              let offsetWidth
+              let opacity
+              if (this.currentShow === 'cd') {
+                  if (this.touch.percent > 0.1) {
+                      offsetWidth = -window.innerWidth
+                      opacity = 0
+                      this.currentShow = 'lyric'
+                  } else {
+                      offsetWidth = 0
+                      opacity = 1
+                  }
+              } else {
+                  if (this.touch.percent < 0.9) {
+                      offsetWidth = 0
+                      opacity = 1
+                      this.currentShow = 'cd'
+                  } else {
+                      opacity = 0
+                      offsetWidth = -window.innerWidth
+                  }
+              }
+              // DOM的操作
+              const time = 300
+              const lyricListDom = this.$refs.lyricList.$el
+              const middleLDom = this.$refs.middleL
+              lyricListDom.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+              lyricListDom.style[transitionDuration] = `${time}`
+              middleLDom.style.opacity = `${opacity}`
+              middleLDom.style[transitionDuration] = 0
           }
       },
       watch: {
@@ -318,7 +411,8 @@
       },
       components: {
           ProgressBar,
-          ProgressCircle
+          ProgressCircle,
+          Scroll
       }
 
   }
@@ -423,6 +517,18 @@
         width 100%
         height 100%
         overflow hidden
+        .lyric-wrapper
+          margin 0 auto
+          width 80%
+          overflow hidden
+          text-align center
+          .text
+            line-height 32px
+            color $color-text-l
+            font-size $font-size-medium
+            &.current
+              color $color-text
+
     .bottom
       position absolute
       bottom 50px
@@ -430,6 +536,18 @@
       .dot-wrapper
         text-align center
         font-size 0
+        .dot
+          display inline-block
+          vertical-align middle
+          margin 0 4px
+          width 8px
+          height 8px
+          border-radius 50%
+          background hsla(0,0%,100%,.5)
+          &.active
+            width 20px
+            border-radius 5px
+            background hsla(0,0%,100%,.5)
       .progress-wrapper
         display flex
         align-items center
