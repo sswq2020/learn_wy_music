@@ -29,7 +29,7 @@
               </div>
             </div>
             <div class="playing-lyric-wrapper">
-              <div class="playing-lyric"></div>
+              <div class="playing-lyric">{{playingLyric}}</div>
             </div>
           </div>
           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
@@ -134,7 +134,8 @@
               radius: 32,
               currentLyric: null,
               currentLineNum: 0,
-              currentShow: 'cd'
+              currentShow: 'cd',
+              playingLyric: ''
           }
       },
       created() {
@@ -238,7 +239,9 @@
               }
           },
           togglePlaying() {
+              if (!this.songReady) { return }
               this.setPlayingState(!this.playing)
+              this.currentLyric && this.currentLyric.togglePlay() // Lyric类提供实例方法togglePlay
           },
           changeMode() {
               const mode = (this.mode + 1) % 3
@@ -284,6 +287,7 @@
           loop() {
               this.$refs.audio.currentTime = 0
               this.$refs.audio.play()
+              this.currentLyric && this.currentLyric.seek(0) // Lyric类提供实例方法seek,歌词回到最初
           },
           /**
            * 监听<audio>的ontimeupdate事件
@@ -309,16 +313,19 @@
            * 监听自定义接受百分比事件,并赋值给<audio>里currentTime属性
            * **/
           onProgressBarChange(percent) {
-              this.$refs.audio.currentTime = this.currentSong.duration * percent
+              const currentTime = this.currentSong.duration * percent
+              this.$refs.audio.currentTime = currentTime
               if (!this.playing) {
                   this.togglePlaying()
               }
+              this.currentLyric && this.currentLyric.seek(currentTime * 1000)
           },
           async getLyric() {
-              const lyric = await (this.currentSong._getLyric())
+              const lyric = await (this.currentSong._getLyric()) // _getLyric是封装Class Song创建的实例方法
+              console.log('lyric' + lyric)
               this.currentLyric = new Lyric(lyric, this.handleLyric) // Lyric类第二个参数是回调函数
               if (this.playing) {
-                  this.currentLyric.play() // Lyric类提供实例方式play
+                  this.currentLyric.play() // Lyric类提供实例方法play
               }
           },
           handleLyric({lineNum, txt}) {
@@ -330,6 +337,7 @@
               } else {
                   scrollList.scrollTo(0, 0, 1000)
               }
+              this.playingLyric = txt
           },
           middleTouchStart(e) {
               this.touch.flag = true
@@ -363,6 +371,7 @@
               let offsetWidth
               let opacity
               if (this.currentShow === 'cd') {
+                  console.log('从右向左滑动' + this.touch.percent)
                   if (this.touch.percent > 0.1) {
                       offsetWidth = -window.innerWidth
                       opacity = 0
@@ -372,6 +381,7 @@
                       opacity = 1
                   }
               } else {
+                  console.log('从左向右滑动' + this.touch.percent)
                   if (this.touch.percent < 0.9) {
                       offsetWidth = 0
                       opacity = 1
@@ -386,9 +396,9 @@
               const lyricListDom = this.$refs.lyricList.$el
               const middleLDom = this.$refs.middleL
               lyricListDom.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
-              lyricListDom.style[transitionDuration] = `${time}`
-              middleLDom.style.opacity = `${opacity}`
-              middleLDom.style[transitionDuration] = 0
+              lyricListDom.style[transitionDuration] = `${time}ms`
+              middleLDom.style.opacity = opacity
+              middleLDom.style[transitionDuration] = `${time}ms`
           }
       },
       watch: {
@@ -396,17 +406,19 @@
               if (newSong.id === oldSong.id) {
                   return
               }
+              if (this.currentLyric) {
+                  this.currentLyric.stop() // Lyric类提供实例方法stop,销毁对象,具体要看文档
+              }
               setTimeout(() => {
                   this.$refs.audio.play() // 监听currentSong变化时,audio标签没有立刻渲染,可以使用$nextClick函数，但是用setTimeout更好
                   this.getLyric()
-                  // const lyric = new Lyric(this.currentSong._getLyric())
               }, 20)
           },
           playing(newPlaying) {
               const audio = this.$refs.audio // 将audio的DOM保存起来
               setTimeout(() => {
                   newPlaying ? audio.play() : audio.pause()
-              }, 20)
+              }, 1000) // 从20改为1000是考虑微信浏览器前后台切换的因素
           }
       },
       components: {
@@ -510,6 +522,11 @@
           margin 30px auto 0
           overflow hidden
           text-align center
+          .playing-lyric
+           height 20px
+           line-height 20px
+           font-size $font-size-medium
+           color hsla(0,0%,100%,.5)
       .middle-r
         display inline-block
         vertical-align top

@@ -46,7 +46,7 @@ export default {
             list.forEach(item => {
                 let {musicData} = item
                 if (musicData.albummid && musicData.songid) {
-                    ret.push(createSong(musicData))
+                    ret.push(createSong(musicData)) // 对每个song进行new Song操作创建实例
                 }
             })
             return ret
