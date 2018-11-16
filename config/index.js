@@ -32,6 +32,16 @@ const api = {
         pathRewrite: { '^/api/lyric': '' },
         changeOrigin: true
     },
+    _getCdInfo: {
+        context: '/api/getCdInfo',
+        target: 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
+        headers: {
+            referer: 'https://c.y.qq.com/',
+            host: 'c.y.qq.com'
+        },
+        pathRewrite: { '/api/getCdInfo': '' },
+        changeOrigin: true
+    }
 }
 
 module.exports = {
@@ -41,7 +51,8 @@ module.exports = {
         assetsPublicPath: '/',
         proxyTable: [
             api._getDiscLists,
-            api._getLyric
+            api._getLyric,
+            api._getCdInfo
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
