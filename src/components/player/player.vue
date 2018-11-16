@@ -24,8 +24,8 @@
         >
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd" :class="cdCls">
-                <img :src="currentSong.image" class="image" >
+              <div class="cd" >
+                <img :src="currentSong.image" class="image" :class="cdCls">
               </div>
             </div>
             <div class="playing-lyric-wrapper">
@@ -123,7 +123,6 @@
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
   import { shuffle } from 'common/js/util'
-
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
   export default {
@@ -187,7 +186,6 @@
           },
           enter(el, done) {
               const {x, y, scale} = this._getPosAndScale()
-
               let animation = {
                   0: {
                       transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`
@@ -199,7 +197,6 @@
                       transform: `translate3d(0, 0, 0) scale(1)`
                   }
               }
-
               animations.registerAnimation({
                   name: 'move',
                   animation,
@@ -208,7 +205,6 @@
                       easing: 'linear'
                   }
               })
-
               animations.runAnimation(this.$refs.cdWrapper, 'move', done)
           },
           afterEnter() {
@@ -412,13 +408,13 @@
               setTimeout(() => {
                   this.$refs.audio.play() // 监听currentSong变化时,audio标签没有立刻渲染,可以使用$nextClick函数，但是用setTimeout更好
                   this.getLyric()
-              }, 20)
+              }, 1000) // 从20改为1000是考虑微信浏览器前后台切换的因素
           },
           playing(newPlaying) {
               const audio = this.$refs.audio // 将audio的DOM保存起来
               setTimeout(() => {
                   newPlaying ? audio.play() : audio.pause()
-              }, 1000) // 从20改为1000是考虑微信浏览器前后台切换的因素
+              }, 20)
           }
       },
       components: {
