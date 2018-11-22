@@ -1,6 +1,6 @@
 import { commonParams } from 'api/config'
 import axios from 'axios'
-export function getDiscList() {
+export function getToplists() {
     const url = '/api/getToplists'
 
     const data = Object.assign({}, commonParams, {
