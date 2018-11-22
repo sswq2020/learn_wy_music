@@ -41,6 +41,16 @@ const api = {
         },
         pathRewrite: { '/api/getCdInfo': '' },
         changeOrigin: true
+    },
+    _getToplists: {
+        context: '/api/getToplists',
+        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg',
+        headers: {
+            referer: 'https://m.y.qq.com',
+            host: 'c.y.qq.com'
+        },
+        pathRewrite: { '/api/getToplists': '' },
+        changeOrigin: true
     }
 }
 
@@ -52,7 +62,8 @@ module.exports = {
         proxyTable: [
             api._getDiscLists,
             api._getLyric,
-            api._getCdInfo
+            api._getCdInfo,
+            api._getToplists
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
