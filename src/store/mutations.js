@@ -7,6 +7,9 @@ const mutations = {
     [types.SET_DISC](state, disc) {
         state.disc = disc
     },
+    [types.SET_TOP_LIST](state, toplist) {
+        state.toplist = toplist
+    },
     [types.SET_PLAYING_STATE](state, flag) {
         state.playing = flag
     },
