@@ -16,3 +16,21 @@ export function getToplists() {
         return Promise.resolve(res.data)
     })
 }
+
+export function getToplistSongs(id) {
+    const url = '/api/getToplistSongs'
+    const data = Object.assign({}, commonParams, {
+        uin: 0,
+        format: 'json',
+        notice: 0,
+        platform: 'h5',
+        needNewCode: 1,
+        tpl: 3,
+        page: 'detail',
+        type: 'top',
+        topid: id
+    })
+    return axios.get(url, { params: data }).then((res) => {
+        return Promise.resolve(res.data)
+    })
+}

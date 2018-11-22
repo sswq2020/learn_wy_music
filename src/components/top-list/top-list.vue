@@ -6,7 +6,7 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import { getSingerDetail } from 'api/singer'
+import { getToplistSongs } from 'api/rank'
 import { ERR_OK } from 'api/config'
 import {createSong} from 'common/js/song.js'
 import musicList from 'components/music-list/music-list.vue'
@@ -18,35 +18,37 @@ export default {
         }
     },
     created() {
-        this._getDetail()
+        this._getToplistSongs()
     },
     computed: {
         title() {
-            return this.singer.name
+            return this.toplist.topTitle
         },
         bgImage() {
-            return this.singer.avatar
+            return this.toplist.picUrl
         },
         ...mapGetters([
-            'singer'
+            'toplist'
         ])
     },
     methods: {
-        async _getDetail() {
-            if (!this.singer.id) {
-                this.$router.push('/singer')
+        async _getToplistSongs() {
+            if (!this.toplist.id) {
+                this.$router.push('/rank')
             }
-            const response = await getSingerDetail(this.singer.id)
-            if (response.code === ERR_OK) {
-                this.songs = this._noramlizeSongs(response.data.list)
+            const res = await getToplistSongs(this.toplist.id)
+            debugger
+            if (res.code === ERR_OK) {
+                this.songs = this._noramlizeSongs(res.songlist)
             }
         },
         _noramlizeSongs(list) {
+            debugger
             let ret = []
             list.forEach(item => {
-                let {musicData} = item
-                if (musicData.albummid && musicData.songid) {
-                    ret.push(createSong(musicData)) // 对每个song进行new Song操作创建实例
+                let {data} = item
+                if (data.albummid && data.songid) {
+                    ret.push(createSong(data)) // 对每个song进行new Song操作创建实例
                 }
             })
             return ret

@@ -51,6 +51,16 @@ const api = {
         },
         pathRewrite: { '/api/getToplists': '' },
         changeOrigin: true
+    },
+    _getToplistSongs: {
+        context: '/api/getToplistSongs',
+        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg',
+        headers: {
+            referer: 'https://c.y.qq.com/',
+            host: 'c.y.qq.com'
+        },
+        pathRewrite: { '/api/getToplistSongs': '' },
+        changeOrigin: true
     }
 }
 
@@ -63,7 +73,8 @@ module.exports = {
             api._getDiscLists,
             api._getLyric,
             api._getCdInfo,
-            api._getToplists
+            api._getToplists,
+            api._getToplistSongs
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
