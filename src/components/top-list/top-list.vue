@@ -1,6 +1,6 @@
 <template>
     <transition name="slide">
-      <music-list :songs="songs" :title="title" :bgImage="bgImage"></music-list>
+      <music-list :songs="songs" :rank="true" :title="title" :bgImage="bgImage"></music-list>
     </transition>
 </template>
 
@@ -37,13 +37,11 @@ export default {
                 this.$router.push('/rank')
             }
             const res = await getToplistSongs(this.toplist.id)
-            debugger
             if (res.code === ERR_OK) {
                 this.songs = this._noramlizeSongs(res.songlist)
             }
         },
         _noramlizeSongs(list) {
-            debugger
             let ret = []
             list.forEach(item => {
                 let {data} = item
