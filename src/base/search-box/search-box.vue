@@ -22,6 +22,9 @@ export default {
     methods: {
         clear() {
             this.query = ''
+        },
+        setQuery(query) {
+            this.query = query
         }
     },
     created() { // 为什么不在watch属性里编写而且created钩子函数里用$watch,两者功能几乎一样
