@@ -61,6 +61,16 @@ const api = {
         },
         pathRewrite: { '/api/getToplistSongs': '' },
         changeOrigin: true
+    },
+    _getHotKey: {
+        context: '/api/getHotKey',
+        target: 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg',
+        headers: {
+            referer: 'https://y.qq.com',
+            host: 'c.y.qq.com'
+        },
+        pathRewrite: { '/api/getHotKey': '' },
+        changeOrigin: true
     }
 }
 
@@ -74,7 +84,8 @@ module.exports = {
             api._getLyric,
             api._getCdInfo,
             api._getToplists,
-            api._getToplistSongs
+            api._getToplistSongs,
+            api._getHotKey
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
