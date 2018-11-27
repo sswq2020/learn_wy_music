@@ -71,6 +71,16 @@ const api = {
         },
         pathRewrite: { '/api/getHotKey': '' },
         changeOrigin: true
+    },
+    _getSearch: {
+        context: '/api/getSearch',
+        target: 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp',
+        headers: {
+            referer: 'https://y.qq.com',
+            host: 'c.y.qq.com'
+        },
+        pathRewrite: { '/api/getSearch': '' },
+        changeOrigin: true
     }
 }
 
@@ -85,7 +95,8 @@ module.exports = {
             api._getCdInfo,
             api._getToplists,
             api._getToplistSongs,
-            api._getHotKey
+            api._getHotKey,
+            api._getSearch
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
