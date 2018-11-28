@@ -100,7 +100,7 @@ export default {
         height 100px
         overflow hidden
         background $color-highlight-background
-        color hsla(0,0%,100%,.3)
+        color $color-text-m
         font-size $font-size-small
         .song
           text-overflow ellipsis
