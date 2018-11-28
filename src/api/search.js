@@ -32,7 +32,8 @@ export function search(query, page, zhida) {
         remoteplace: 'txt.mqq.all',
         uid: 0,
         platform: 'h5',
-        needNewCode: 1
+        needNewCode: 1,
+        format: 'json'
     })
     return axios.get(url, { params: data }).then((res) => {
         return Promise.resolve(res.data)
