@@ -23,6 +23,10 @@
           listenScroll: {
               type: Boolean,
               default: false
+          },
+          pullup: {
+              type: Boolean,
+              default: false
           }
 
       },
@@ -33,15 +37,22 @@
       },
       methods: {
           _initScroll() {
+              let this_ = this
               if (!this.$refs.wrapper) return
               this.scroll = new BScroll(this.$refs.wrapper, {
                   probeType: this.probeType,
                   click: this.click
               })
               if (this.listenScroll) {
-                  let this_ = this
                   this_.scroll.on('scroll', (pos) => {
                       this_.$emit('scroll', pos)
+                  })
+              }
+              if (this.pullup) {
+                  this_.scroll.on('scrollEnd', () => { // 滚动停止
+                      if (this_.scroll.y <= (this_.scroll.maxScrollY + 50)) {
+                          this_.$emit('scrollToEnd') // 滚动条到底部
+                      }
                   })
               }
           },
