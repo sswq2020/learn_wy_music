@@ -5,7 +5,7 @@
           ref="suggest"
           @scrollToEnd="searchMore">
     <ul class="suggest-list">
-      <li class="suggest-item" v-for= "item in result">
+      <li @click="selectItem(item)" class="suggest-item" v-for= "item in result">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
@@ -26,6 +26,8 @@ import loading from 'base/loading/loading'
 import {search} from 'api/search'
 import {ERR_OK} from 'api/config'
 import {createSong} from 'common/js/song.js'
+import Singer from 'common/js/singer.js'
+import {mapMutations, mapActions} from 'vuex'
 
 const TYPE_SINGER = 'singer'
 const perpage = 20
@@ -67,6 +69,15 @@ export default {
                 this._checkMore(res.data)
             }
         },
+        async searchMore() {
+            if (!this.hasMore) return
+            this.page++
+            const res = await search(this.query, this.page, this.showSinger, perpage)
+            if (res.code === ERR_OK) {
+                this.result = this.result.concat(this._normalizeSongs(res.data.song.list)) // 这里不需要歌手了
+                this._checkMore(res.data)
+            }
+        },
         _getResult(data) {
             let ret = []
             if (data.zhida && data.zhida.singerid) {
@@ -92,21 +103,29 @@ export default {
         getDisplayName(item) {
             return item.type === TYPE_SINGER ? `${item.singername}` : `${item.name}-${item.singer}`
         },
-        async searchMore() {
-            if (!this.hasMore) return
-            this.page++
-            const res = await search(this.query, this.page, this.showSinger, perpage)
-            if (res.code === ERR_OK) {
-                this.result = this.result.concat(this._getResult(res.data))
-                this._checkMore(res.data)
-            }
-        },
         _checkMore(data) {
             const {curnum, curpage, list, totalnum} = data.song
             if (!list.length || (curnum + curpage * perpage) >= totalnum) {
                 this.hasMore = false
             } else {
                 this.hasMore = true
+            }
+        },
+        ...mapMutations({
+            setSinger: 'SET_SINGER' // 相当于映射this.$store.commit('SET_SINGER',payload)
+        }),
+        ...mapActions([
+            'insertSong'
+        ]),
+        selectItem(item) {
+            if (item.type === TYPE_SINGER) {
+                const singer = new Singer(item.singermid, item.singername)
+                this.$router.push({
+                    path: `/search/${singer.id}`
+                })
+                this.setSinger(singer)
+            } else {
+                this.insertSong(item)
             }
         }
 
