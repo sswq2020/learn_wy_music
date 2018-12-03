@@ -17,11 +17,15 @@
           <loading :title="''"></loading>
       </div>
     </ul>
+    <div class="no-result-wrapper" v-show="hasMore && !result.length">
+      <no-result title="抱歉,暂无搜索结果"></no-result>
+    </div>
   </scroll>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll.vue'
+import NoResult from 'base/no-result/no-result.vue'
 import loading from 'base/loading/loading'
 import {search} from 'api/search'
 import {ERR_OK} from 'api/config'
@@ -53,7 +57,8 @@ export default {
     },
     components: {
         scroll: Scroll,
-        loading: loading
+        loading: loading,
+        NoResult: NoResult
     },
     created() {
 
@@ -164,5 +169,10 @@ export default {
              text-overflow ellipsis
              overflow hidden
              white-space nowrap
+     .no-result-wrapper
+       position absolute
+       width 100%
+       top 50%
+       transform translateY(-50%)
 </style>
 
