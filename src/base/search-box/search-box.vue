@@ -7,6 +7,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import {_debounce} from 'common/js/util.js'
 export default {
     props: {
         placeholder: {
@@ -28,9 +29,10 @@ export default {
         }
     },
     created() { // 为什么不在watch属性里编写而且created钩子函数里用$watch,两者功能几乎一样
-        this.$watch('query', (newQuery) => {
+        this.$watch('query', _debounce((newQuery) => {
             this.$emit('query', newQuery)
-        })
+        }, 400)
+        )
     }
 
 }
