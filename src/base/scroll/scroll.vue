@@ -27,6 +27,10 @@
           pullup: {
               type: Boolean,
               default: false
+          },
+          beforeScroll: {
+              type: Boolean,
+              default: false
           }
 
       },
@@ -53,6 +57,11 @@
                       if (this_.scroll.y <= (this_.scroll.maxScrollY + 50)) {
                           this_.$emit('scrollToEnd') // 滚动条到底部
                       }
+                  })
+              }
+              if (this.beforeScroll) {
+                  this_.scroll.on('beforeScroll', () => {
+                      this._$emit('beforeScroll')
                   })
               }
           },
