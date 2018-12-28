@@ -1,8 +1,10 @@
 <template>
   <scroll class="suggest"
+          ref="suggest"
           :data="result"
           :pullup="true"
-          ref="suggest"
+          :beforeScroll="true"
+          @beforeScroll="listScroll"
           @scrollToEnd="searchMore">
     <ul class="suggest-list">
       <li @click="selectItem(item)" class="suggest-item" v-for= "item in result">
@@ -52,7 +54,8 @@ export default {
         return {
             page: 1,
             result: [],
-            hasMore: true
+            hasMore: true,
+            beforeScroll: true
         }
     },
     components: {
@@ -60,9 +63,7 @@ export default {
         loading: loading,
         NoResult: NoResult
     },
-    created() {
 
-    },
     methods: {
         async _search() {
             this.hasMore = true
@@ -107,6 +108,9 @@ export default {
         },
         getDisplayName(item) {
             return item.type === TYPE_SINGER ? `${item.singername}` : `${item.name}-${item.singer}`
+        },
+        listScroll() {
+            this.$emit('listScroll')
         },
         _checkMore(data) {
             const {curnum, curpage, list, totalnum} = data.song
