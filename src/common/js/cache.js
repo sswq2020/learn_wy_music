@@ -4,13 +4,16 @@ const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LENGTH = 15
 
 export function saveSearch(query) {
-    debugger
     let searches = storage.get(SEARCH_KEY, [])
     insertArray(searches, query, SEARCH_MAX_LENGTH, (item) => {
         return item === query
     })
     storage.set(SEARCH_KEY, searches)
     return searches
+}
+
+export function loadSearch() {
+    return storage.get(SEARCH_KEY, [])
 }
 
 function insertArray(arr, val, maxLen, compare) {
