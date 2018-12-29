@@ -16,7 +16,7 @@
       </scroll>
     </div>
     <div class="search-result" v-show="query">
-      <suggest @listScroll="blurInput" :query="query"></suggest>
+      <suggest @select="saveSearch"  @listScroll="blurInput" :query="query"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -27,6 +27,7 @@
   import Suggest from 'components/suggest/suggest.vue'
   import Scroll from 'base/scroll/scroll.vue'
   import {getHotKey} from 'api/search.js'
+  import {mapActions} from 'vuex'
 
   export default {
       data() {
@@ -56,7 +57,13 @@
           },
           blurInput() {
               this.$refs.searchBox.blur()
-          }
+          },
+          saveSearch() { // 保存的是搜索字,不是下拉展示的某一项
+              this.saveSearchHistory(this.query)
+          },
+          ...mapActions([
+              'saveSearchHistory'
+          ])
       }
 
   }
