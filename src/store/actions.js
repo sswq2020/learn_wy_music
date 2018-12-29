@@ -1,6 +1,7 @@
 import * as types from './mutation-types'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
+import { saveSearch } from 'common/js/cache'
 
 function findIndex(list, song) {
     return list.findIndex((item) => {
@@ -75,4 +76,11 @@ export const insertSong = function({ commit, state }, song) {
     commit(types.SET_CURRENT_INDEX, currentIndex)
     commit(types.SET_FULL_SCREEN, true)
     commit(types.SET_PLAYING_STATE, true)
+}
+//  个人觉得其实也可以在suggest.vue使用mapMutation,
+//   主要原因提交一个mutation可以不需要action
+//   当然saveSearch的逻辑也要转移过去
+//   使用action就是比较利于复用
+export const saveSearchHistory = function({ commit, state }, query) {
+    commit(types.SET_SEARCH_HISTORY, saveSearch(query))
 }
