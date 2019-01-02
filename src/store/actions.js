@@ -89,6 +89,6 @@ export const deleteSearchHistory = function({ commit, state }, history) {
     commit(types.SET_SEARCH_HISTORY, deleteSearchHistoryItem(history))
 }
 
-export const deleteSearchHistoryTotal = function({ commit }) {
+export const clearSearchHistory = function({ commit }) {
     commit(types.SET_SEARCH_HISTORY, deleteSearchHistoryAll())
 }

@@ -37,7 +37,6 @@ function deleteArray(arr, cb = () => {}) {
     }
 }
 export function deleteSearchHistoryItem(history) {
-    debugger
     let searches = storage.get(SEARCH_KEY, [])
     deleteArray(searches, (item) => {
         return history === item
@@ -47,6 +46,6 @@ export function deleteSearchHistoryItem(history) {
 }
 
 export function deleteSearchHistoryAll(history) {
-    storage.set(SEARCH_KEY, [])
+    storage.remove(SEARCH_KEY)
     return []
 }

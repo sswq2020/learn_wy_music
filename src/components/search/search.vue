@@ -3,8 +3,8 @@
     <div class="search-box-wrapper">
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
-    <div class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut" :data="searchHistroy">
+    <div class="shortcut-wrapper" ref="ShortCutWrapper" v-show="!query">
+      <scroll ref="shortcut" class="shortcut" :data="searchHistroy">
         <div>
           <div class="hot-key">
             <h1 class="title"></h1>
@@ -17,16 +17,16 @@
           <div class="search-history" v-show="searchHistroy.length">
             <h1 class="title">
               <span class="text">搜索历史</span>
-              <span class="clear" @click="_deleteAll">
+              <span class="clear" @click="clearSearchHistory">
                 <i class="icon-clear"></i>
               </span>
             </h1>
-            <search-list :searches="searchHistroy"  @select="addQuery" @deleteHistoryOne="_deleteHistroyItem"></search-list>
+            <search-list :searches="searchHistroy"  @select="addQuery" @deleteHistoryOne="deleteSearchHistory"></search-list>
           </div>
         </div>
       </scroll>
     </div>
-    <div class="search-result" v-show="query">
+    <div class="search-result"ref="SearchResult" v-show="query">
       <suggest @select="saveSearch"  @listScroll="blurInput" :query="query"></suggest>
     </div>
     <router-view></router-view>
@@ -35,13 +35,15 @@
 
 <script type="text/ecmascript-6">
   import SearchBox from 'base/search-box/search-box.vue'
+  import Scroll from 'base/scroll/scroll.vue'
   import SearchList from 'components/search-list/search-list.vue'
   import Suggest from 'components/suggest/suggest.vue'
-  import Scroll from 'base/scroll/scroll.vue'
+  import {playlistMixin} from 'common/js/mixin'
   import {getHotKey} from 'api/search.js'
   import {mapActions, mapGetters} from 'vuex'
 
   export default {
+      mixins: [playlistMixin],
       data() {
           return {
               hotkey: [],
@@ -63,6 +65,11 @@
           this._getHotKey()
       },
       methods: {
+          ...mapActions([
+              'saveSearchHistory',
+              'deleteSearchHistory',
+              'clearSearchHistory'
+          ]),
           async _getHotKey() {
               const res = await getHotKey()
               this.hotkey = res.data.hotkey.slice(0, 10)
@@ -79,18 +86,12 @@
           saveSearch() { // 保存的是搜索字,不是下拉展示的某一项
               this.saveSearchHistory(this.query)
           },
-          _deleteHistroyItem(history) {
-              debugger
-              this.deleteSearchHistory(history)
-          },
-          _deleteAll() {
-              this.deleteSearchHistoryTotal()
-          },
-          ...mapActions([
-              'saveSearchHistory',
-              'deleteSearchHistory',
-              'deleteSearchHistoryTotal'
-          ])
+          hanlePlaylist() {
+              const bottom = this.playlist.length > 0 ? '60px' : ''
+              this.$refs.ShortCutWrapper.style.bottom = bottom
+              this.$refs.SearchResult.style.bottom = bottom
+              this.$refs.shortcut.refresh()
+          }
       }
 
   }

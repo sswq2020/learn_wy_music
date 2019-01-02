@@ -7,7 +7,7 @@
           @beforeScroll="listScroll"
           @scrollToEnd="searchMore">
     <ul class="suggest-list">
-      <li @click="selectItem(item)" class="suggest-item" v-for= "item in result">
+      <li @click.stop="selectItem(item)" class="suggest-item" v-for= "item in result">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
