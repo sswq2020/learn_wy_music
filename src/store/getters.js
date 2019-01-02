@@ -20,4 +20,4 @@ export const currentSong = (state) => {
     return state.playlist[state.currentIndex] || {}
 }
 
-export const searchHistroy = (state) => state.searchHistroy
+export const searchHistroy = state => state.searchHistroy

@@ -4,14 +4,25 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut">
-        <div class="hot-key">
-          <h1 class="title"></h1>
-          <ul>
-            <li @click="addQuery(item.k)"  class="item" v-for="item in hotkey">
-              <span>{{item.k}}</span>
-            </li>
-          </ul>
+      <scroll class="shortcut" :data="searchHistroy">
+        <div>
+          <div class="hot-key">
+            <h1 class="title"></h1>
+            <ul>
+              <li @click="addQuery(item.k)"  class="item" v-for="item in hotkey">
+                <span>{{item.k}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="search-history" v-show="searchHistroy.length">
+            <h1 class="title">
+              <span class="text">搜索历史</span>
+              <span class="clear" @click="_deleteAll">
+                <i class="icon-clear"></i>
+              </span>
+            </h1>
+            <search-list :searches="searchHistroy"  @select="addQuery" @deleteHistoryOne="_deleteHistroyItem"></search-list>
+          </div>
         </div>
       </scroll>
     </div>
@@ -24,10 +35,11 @@
 
 <script type="text/ecmascript-6">
   import SearchBox from 'base/search-box/search-box.vue'
+  import SearchList from 'components/search-list/search-list.vue'
   import Suggest from 'components/suggest/suggest.vue'
   import Scroll from 'base/scroll/scroll.vue'
   import {getHotKey} from 'api/search.js'
-  import {mapActions} from 'vuex'
+  import {mapActions, mapGetters} from 'vuex'
 
   export default {
       data() {
@@ -39,7 +51,13 @@
       components: {
           SearchBox,
           Scroll,
-          Suggest
+          Suggest,
+          SearchList
+      },
+      computed: {
+          ...mapGetters([
+              'searchHistroy'
+          ])
       },
       created() {
           this._getHotKey()
@@ -61,8 +79,17 @@
           saveSearch() { // 保存的是搜索字,不是下拉展示的某一项
               this.saveSearchHistory(this.query)
           },
+          _deleteHistroyItem(history) {
+              debugger
+              this.deleteSearchHistory(history)
+          },
+          _deleteAll() {
+              this.deleteSearchHistoryTotal()
+          },
           ...mapActions([
-              'saveSearchHistory'
+              'saveSearchHistory',
+              'deleteSearchHistory',
+              'deleteSearchHistoryTotal'
           ])
       }
 
@@ -88,7 +115,23 @@
           .title
             margin-bottom 20px
             font-size $font-size-medium
-            color $color-text-l
+            color $color-text-n
+        .search-history
+          position relative
+          margin 0 20px
+          .title
+            display flex
+            align-items center
+            height 40px
+            font-size $font-size-medium
+            color $color-text-n
+            .text
+              flex 1
+            .clear
+              position relative
+              .icon-clear
+                font-size $font-size-medium
+                color $color-text-n
         .item
           display inline-block
           padding 5px 10px
