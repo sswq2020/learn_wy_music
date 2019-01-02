@@ -10,7 +10,7 @@ const state = {
     currentIndex: -1, // 当前播放哪首歌,
     disc: {}, // 歌单
     toplist: {}, // 排行耪
-    searchHistroy: loadSearch // 搜素过的历史,从本地localStorage读取
+    searchHistroy: loadSearch() // 搜素过的历史,从本地localStorage读取
 }
 
 export default state
