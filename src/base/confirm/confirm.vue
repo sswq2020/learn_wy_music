@@ -68,9 +68,9 @@ export default {
     z-index 998
     background-color $color-background-d
     &.confirm-fade-enter-active
-      animation confirm-fadein 5s
+      animation confirm-fadein 0.3s
       .confirm-content
-        animation confirm-zoom 5s
+        animation confirm-zoom 0.3s
     .confirm-wrapper
       position absolute
       top 50%
