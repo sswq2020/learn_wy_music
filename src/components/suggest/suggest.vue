@@ -32,6 +32,7 @@ import loading from 'base/loading/loading'
 import {search} from 'api/search'
 import {ERR_OK} from 'api/config'
 import {createSong} from 'common/js/song.js'
+import {getIncludeUrlSongList} from 'common/js/util.js'
 import Singer from 'common/js/singer.js'
 import {mapMutations, mapActions} from 'vuex'
 
@@ -71,7 +72,7 @@ export default {
             this.page = 1
             const res = await search(this.query, this.page, this.showSinger, perpage)
             if (res.code === ERR_OK) {
-                this.result = this._getResult(res.data)
+                this.result = await this._getResult(res.data)
                 this._checkMore(res.data)
             }
         },
@@ -80,17 +81,19 @@ export default {
             this.page++
             const res = await search(this.query, this.page, this.showSinger, perpage)
             if (res.code === ERR_OK) {
-                this.result = this.result.concat(this._normalizeSongs(res.data.song.list)) // 这里不需要歌手了
+                let list = await getIncludeUrlSongList(res.data.song.list)
+                this.result = this.result.concat(this._normalizeSongs(list)) // 这里不需要歌手了
                 this._checkMore(res.data)
             }
         },
-        _getResult(data) {
+        async _getResult(data) {
             let ret = []
             if (data.zhida && data.zhida.singerid) {
                 ret.push({...data.zhida, ...{type: TYPE_SINGER}}) // =>Object.assign({},data.zhida,{type:TYPE_SINGER})
             }
             if (data.song) {
-                ret = ret.concat(this._normalizeSongs(data.song.list)) // 如果使用ret = [...ret,...data.song.list]也行,但是多一步解构，不如直接添加方便
+                let list = await getIncludeUrlSongList(data.song.list)
+                ret = ret.concat(this._normalizeSongs(list)) // 如果使用ret = [...ret,...data.song.list]也行,但是多一步解构，不如直接添加方便
             }
             return ret
         },
