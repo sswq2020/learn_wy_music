@@ -27,3 +27,15 @@ export function getLyric(mid) {
         })
     })
 }
+
+/**
+ * @author sswq
+ * @description 抓取QQ歌曲url的接口,因为经常变化,不能写死
+ * @param ids {String} songmid的以逗号分隔 songmid1,songmid2,songmid3
+ */
+export function getPurlUrl(ids) {
+    const url = '/api/getPurlUrl' + '/' + ids
+    return axios.get(url).then((res) => {
+        return Promise.resolve(res.data)
+    })
+}
