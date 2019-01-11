@@ -9,6 +9,7 @@ import {mapGetters} from 'vuex'
 import { getSingerDetail } from 'api/singer'
 import { ERR_OK } from 'api/config'
 import {createSong} from 'common/js/song.js'
+import {getIncludeUrlSongList} from 'common/js/util.js'
 import musicList from 'components/music-list/music-list.vue'
 export default {
     name: 'singer-detail',
@@ -38,7 +39,8 @@ export default {
             }
             const response = await getSingerDetail(this.singer.id)
             if (response.code === ERR_OK) {
-                this.songs = this._noramlizeSongs(response.data.list)
+                let list = await getIncludeUrlSongList(response.data.list)
+                this.songs = this._noramlizeSongs(list)
             }
         },
         _noramlizeSongs(list) {

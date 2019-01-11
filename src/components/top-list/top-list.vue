@@ -9,6 +9,7 @@ import {mapGetters} from 'vuex'
 import { getToplistSongs } from 'api/rank'
 import { ERR_OK } from 'api/config'
 import {createSong} from 'common/js/song.js'
+import {getIncludeUrlSongList} from 'common/js/util.js'
 import musicList from 'components/music-list/music-list.vue'
 export default {
     name: 'top-list',
@@ -38,7 +39,8 @@ export default {
             }
             const res = await getToplistSongs(this.toplist.id)
             if (res.code === ERR_OK) {
-                this.songs = this._noramlizeSongs(res.songlist)
+                let list = await getIncludeUrlSongList(res.songlist)
+                this.songs = this._noramlizeSongs(list)
             }
         },
         _noramlizeSongs(list) {
