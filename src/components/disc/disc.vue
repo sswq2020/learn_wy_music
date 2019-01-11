@@ -9,6 +9,7 @@ import {mapGetters} from 'vuex'
 import { ERR_OK } from 'api/config'
 import {getSongList} from 'api/recommend'
 import {createSong} from 'common/js/song.js'
+import {getIncludeUrlSongList} from 'common/js/util.js'
 import musicList from 'components/music-list/music-list.vue'
 export default {
     name: 'disc',
@@ -35,7 +36,8 @@ export default {
         async _getSongList() {
             const res = await getSongList(this.disc.dissid)
             if (res.code === ERR_OK) {
-                this.songs = this._noramlizeSongs(res.cdlist[0].songlist)
+                let list = await getIncludeUrlSongList(res.cdlist[0].songlist)
+                this.songs = this._noramlizeSongs(list)
             }
         },
         _noramlizeSongs(list) {
