@@ -1,3 +1,6 @@
+import _ from 'lodash'
+import {getPurlUrl} from 'api/song'
+
 export function shuffle(arr) {
     let _arr = arr.slice() // 小技巧相当于原数组的拷贝,原数组不变
     for (let i = 0; i < _arr.length; i++) {
@@ -23,4 +26,32 @@ export function _debounce(func, delay) {
             func.apply(this, args)
         }, delay)
     }
+}
+
+function getSongMid(list) {
+    let ret = []
+    if (!_.isArray(list)) {
+        list = [list]
+    }
+    for (let i = 0; i < list.length; i++) {
+        ret.push(list[i].songmid)
+    }
+    return ret.join()
+}
+
+function inSertUrl(origin = [], target = [], props) {
+    for (let i = 0; i < origin.length; i++) {
+        origin[i][props] = target[i]
+    }
+    return origin
+}
+
+export async function getIncludeUrlSongList (songlist) {
+    let songUrlList
+    let res = await getPurlUrl(getSongMid(songlist))
+    if (res.errno === 0) {
+        songUrlList = res.data
+    }
+    songlist = inSertUrl(songlist, songUrlList, 'url')
+    return songlist
 }
