@@ -81,7 +81,17 @@ const api = {
         },
         pathRewrite: { '/api/getSearch': '' },
         changeOrigin: true
-    }
+    },
+    _getPurlUrl: {
+        context: '/api/getPurlUrl',
+        target: 'https://music.niubishanshan.top/api/v2/music/songUrllist/',
+        // headers: {
+        //     referer: 'https://music.niubishanshan.top/api/v2/music/',
+        //     host: 'music.niubishanshan.top'
+        // },
+        pathRewrite: { '/api/getPurlUrl': '' },
+        changeOrigin: true
+    },
 }
 
 module.exports = {
@@ -96,7 +106,8 @@ module.exports = {
             api._getToplists,
             api._getToplistSongs,
             api._getHotKey,
-            api._getSearch
+            api._getSearch,
+            api._getPurlUrl
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
