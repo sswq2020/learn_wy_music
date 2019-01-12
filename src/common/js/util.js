@@ -33,15 +33,25 @@ function getSongMid(list) {
     if (!_.isArray(list)) {
         list = [list]
     }
-    for (let i = 0; i < list.length; i++) {
-        ret.push(list[i].songmid)
-    }
+    list.forEach(item => {
+        if (item['songmid']) {
+            ret.push(item.songmid)
+        } else if (item['musicData']) {
+            let {musicData} = item
+            ret.push(musicData.songmid)
+        }
+    })
     return ret.join()
 }
 
 function inSertUrl(origin = [], target = [], props) {
     for (let i = 0; i < origin.length; i++) {
-        origin[i][props] = target[i]
+        let {musicData} = origin[i]
+        if (!musicData) {
+            origin[i][props] = target[i]
+        } else {
+            musicData[props] = target[i]
+        }
     }
     return origin
 }
