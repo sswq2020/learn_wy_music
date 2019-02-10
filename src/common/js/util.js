@@ -33,12 +33,15 @@ function getSongMid(list) {
     if (!_.isArray(list)) {
         list = [list]
     }
+    /* 对应三种不同的数据结构 */
     list.forEach(item => {
-        if (item['songmid']) {
-            ret.push(item.songmid)
-        } else if (item['musicData']) {
-            let {musicData} = item
+        let {songmid, musicData, data} = item
+        if (songmid) {
+            ret.push(songmid)
+        } else if (musicData && musicData.songmid) {
             ret.push(musicData.songmid)
+        } else if (data && data.songmid) {
+            ret.push(data.songmid)
         }
     })
     return ret.join()

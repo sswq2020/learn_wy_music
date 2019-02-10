@@ -109,7 +109,7 @@
           }
       },
       watch: {
-          query(newQuery) {
+          query(newQuery) { // 这里query的作用就是输入字变化，带来的dom的改变
               if (!newQuery) {
                   setTimeout(() => {
                       this.$refs.shortcut.refresh()
