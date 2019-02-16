@@ -39,16 +39,22 @@ export default {
             }
             const res = await getToplistSongs(this.toplist.id)
             if (res.code === ERR_OK) {
-                let list = await getIncludeUrlSongList(res.songlist)
+                let list = await getIncludeUrlSongList(this._DataToMusicData(res.songlist))
                 this.songs = this._noramlizeSongs(list)
             }
+        },
+        _DataToMusicData(list) {
+            let ret = []
+            list.forEach(item => {
+                ret.push(item.data)
+            })
+            return ret
         },
         _noramlizeSongs(list) {
             let ret = []
             list.forEach(item => {
-                let {data} = item
-                if (data.albummid && data.songid) {
-                    ret.push(createSong(data)) // 对每个song进行new Song操作创建实例
+                if (item.albummid && item.songid) {
+                    ret.push(createSong(item)) // 对每个song进行new Song操作创建实例
                 }
             })
             return ret

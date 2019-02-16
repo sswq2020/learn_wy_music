@@ -120,6 +120,7 @@
   import Scroll from 'base/scroll/scroll'
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
+  import playlist from '../playlist/playlist'
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
   import { shuffle } from 'common/js/util'
@@ -420,7 +421,8 @@
       components: {
           ProgressBar,
           ProgressCircle,
-          Scroll
+          Scroll,
+          playlist
       }
 
   }
