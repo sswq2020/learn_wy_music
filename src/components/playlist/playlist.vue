@@ -1,43 +1,130 @@
 <template>
   <transition name="list-fade">
-    <div class="playlist">
-      <div class="list-wrapper">
+    <div class="playlist" v-show="showFlag" @click="hide">
+      <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
             <i class="icon"></i>
-            <span class="text"></span>
-            <span class="clear"></span>
+            <span class="text">顺序播放</span>
+            <span class="clear" @click.stop="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <div class="list-content">
-          <ul>
-            <li class="item">
-              <i class="icon-play"></i>
-              <span class="text"></span>
-              <span class="like"></span>
-              <span class="delete"></span>
+        <Scroll ref="listContent" class="list-content" :data="sequenceList">
+          <transition-group name="list" tag="ul">
+            <li :key="item.id" ref="listItem" @click="selectItem(item,index)" class="item" v-for="(item,index) in sequenceList">
+              <i class="current" :class="getCurrentIcon(item)"></i>
+              <span class="text">{{item.name}}</span>
+              <span class="like">
+                <i class="icon-not-favorite"></i>
+              </span>
+              <span class="delete" @click.stop="deleteOne(item,index)">
+                <i class="icon-delete"></i>
+              </span>
             </li>
-          </ul>
-        </div>
+          </transition-group>
+        </Scroll>
         <div class="list-operate">
           <div class="add">
             <i class="icon-add"></i>
-            <span class="text"></span>
+            <span class="text">添加歌曲到列队</span>
           </div>
         </div>
-        <div class="list-close">
+        <div class="list-close"  @click.stop="hide">
           <span>关闭</span>
         </div>
       </div>
-
+      <confirm text="是否清空所有歌曲"
+          ref="confirm"
+          confirmBtnText="清空"
+          @confirm="confirmClear">
+      </confirm>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
- // import { mapGetters, mapMutations } from 'vuex'
+ import { mapGetters, mapMutations, mapActions } from 'vuex'
+ import { playMode } from 'common/js/config'
+ import Scroll from 'base/scroll/scroll'
+import Confirm from 'base/confirm/confirm.vue'
  export default {
-
+     data() {
+         return {
+             showFlag: false
+         }
+     },
+     computed: {
+         ...mapGetters([
+             'playlist',
+             'sequenceList',
+             'currentSong',
+             'mode',
+             'playing'
+         ])
+     },
+     methods: {
+         ...mapMutations({
+             'setCurrentIndex': 'SET_CURRENT_INDEX',
+             'setPlayingState': 'SET_PLAYING_STATE'
+         }),
+         ...mapActions([
+             'deleteSong',
+             'deleteSonglist'
+         ]),
+         show() {
+             setTimeout(() => {
+                 this.$refs.listContent.refresh()
+                 this.scrollToCurrent(this.currentSong)
+             }, 20)
+             this.showFlag = true
+         },
+         hide() {
+             this.showFlag = false
+         },
+         getCurrentIcon(item) {
+             return item.id === this.currentSong.id ? 'icon-play' : ''
+         },
+         selectItem(item, index) {
+             if (this.mode === playMode.random) {
+                 index = this.playlist.findIndex((song) => {
+                     return item.id === song.id
+                 })
+             }
+             this.setCurrentIndex(index)
+             this.setPlayingState(true)
+         },
+         deleteOne(item, index) {
+             this.deleteSong(item)
+             if (!this.playlist.length) {
+                 this.hide()
+             }
+         },
+         showConfirm() {
+             this.$refs.confirm.show()
+         },
+         confirmClear() {
+             this.deleteSonglist()
+             this.hide()
+         },
+         scrollToCurrent(current) {
+             const index = this.sequenceList.findIndex((song) => {
+                 return current.id === song.id
+             })
+             this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300)
+         }
+     },
+     watch: {
+         currentSong(newSong, oldSong) {
+             if (!this.showFlag || newSong.id === oldSong.id) {
+                 return
+             }
+             this.scrollToCurrent(newSong)
+         }
+     },
+     components: {
+         Scroll,
+         Confirm
+     }
  }
 </script>
 
@@ -45,7 +132,7 @@
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
     .playlist
-      position fiexed
+      position fixed
       left 0
       right 0
       top 0
@@ -69,25 +156,44 @@
         .list-header
           position relative
           padding 20px 30px 10px 20px
+          .title
+            display flex
+            align-items center
+            .icon
+              margin-right 10px
+              font-size $font-size-large-z
+              color rgba(255,205,49,.5)
+            .text
+              flex 1
+              font-size $font-size-medium
+              color $color-text-n
+            .clear
+              position relative
+              .icon-clear
+                font-size $font-size-medium
+                color $color-text-m
         .list-content
-          max-width 240px
+          max-height 240px
           overflow hidden
           .item
             display flex
             align-items center
             height 40px
             padding 0 30px 0 20px
-            overflow hidden
+            &.list-enter-active,&.list-leave-active
+              transition all .2s liner
+            &.list-enter,&.list-leave-to
+              height 0
             .current
               flex 0 0 20px
               width 20px
               font-size $font-size-small
-              color $color-theme-d
+              color $color-theme
             .text
               flex 1
               font-size $font-size-medium
               color $color-text-m
-              extend-click()
+              no-wrap()
             .like
               position relative
               font-size $font-size-small
@@ -100,12 +206,22 @@
         .list-operate
           width 140px
           margin 20px auto 30px
+          .add
+            display flex
+            align-items center
+            padding 8px 16px
+            border 1px solid $color-text-n
+            border-radius 100px
+            color $color-text-n
+            .icon-add
+              margin-right 5px
+              font-size $font-size-small-s
+            .text
+              font-size $font-size-small
         .list-close
           text-align center
           line-height 50px
           background-color $color-background
           font-size $font-size-medium-x
           color $color-text-n
-
-
 </style>
