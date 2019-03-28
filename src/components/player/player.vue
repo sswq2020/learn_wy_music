@@ -127,6 +127,7 @@
   import { playMode } from 'common/js/config'
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
+  // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
   export default {
       mixins: [playerMixin],
       data() {

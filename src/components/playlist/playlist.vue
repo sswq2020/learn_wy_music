@@ -5,7 +5,7 @@
         <div class="list-header">
           <h1 class="title">
             <i class="icon" :class="modeIcon" @click="changeMode"></i>
-            <span class="text">顺序播放</span>
+            <span class="text">{{ModeText}}</span>
             <span class="clear" @click.stop="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
@@ -50,9 +50,15 @@
  import Confirm from 'base/confirm/confirm.vue'
  export default {
      mixins: [playerMixin],
+     // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
      data() {
          return {
              showFlag: false
+         }
+     },
+     computed: {
+         ModeText() {
+             return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.loop ? '单曲循环' : '随机播放'
          }
      },
      methods: {
