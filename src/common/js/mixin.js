@@ -1,4 +1,5 @@
 import { mapGetters } from 'vuex'
+import { playMode } from 'common/js/config'
 
 export const playlistMixin = {
     computed: {
@@ -20,6 +21,17 @@ export const playlistMixin = {
     methods: {
         handlePlaylist() {
             throw new Error('componment must implement hanlePlaylist method')
+        }
+    }
+}
+
+export const playerMixin = {
+    computed: {
+        ...mapGetters([
+            'mode'
+        ]),
+        modeIcon() {
+            return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
         }
     }
 }
