@@ -93,13 +93,13 @@
             <i :class="miniIcon" class="icon-mini" @click.stop="togglePlaying"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlaylist">
           <div class="icon-playlist"></div>
         </div>
-
-
       </div>
     </transition>
+
+    <playlist ref="playlist"></playlist>
     <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件oncanplay和onerror进行监听-->
     <audio ref="audio"
            :src="currentSong.url"
@@ -120,13 +120,15 @@
   import Scroll from 'base/scroll/scroll'
   import ProgressBar from 'base/progress-bar/progress-bar'
   import ProgressCircle from 'base/progress-circle/progress-circle'
-  import playlist from '../playlist/playlist'
+  import Playlist from '../playlist/playlist'
+  import {playerMixin} from 'common/js/mixin'
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
   import { shuffle } from 'common/js/util'
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
   export default {
+      mixins: [playerMixin],
       data() {
           return {
               songReady: false, // <aduio></aduio>里监听oncanplay事件,完成后才可点击
@@ -396,10 +398,16 @@
               lyricListDom.style[transitionDuration] = `${time}ms`
               middleLDom.style.opacity = opacity
               middleLDom.style[transitionDuration] = `${time}ms`
+          },
+          showPlaylist() {
+              this.$refs.playlist.show()
           }
       },
       watch: {
           currentSong(newSong, oldSong) {
+              if (!newSong.id) {
+                  return
+              }
               if (newSong.id === oldSong.id) {
                   return
               }
@@ -422,7 +430,7 @@
           ProgressBar,
           ProgressCircle,
           Scroll,
-          playlist
+          Playlist
       }
 
   }
