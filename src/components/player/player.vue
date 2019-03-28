@@ -168,9 +168,6 @@
           },
           percent() {
               return (this.currentTime) / (this.currentSong.duration)
-          },
-          modeIcon() {
-              return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
           }
       },
       methods: {

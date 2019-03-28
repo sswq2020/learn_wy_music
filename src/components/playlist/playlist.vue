@@ -4,7 +4,7 @@
       <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
-            <i class="icon"></i>
+            <i class="icon" :class="modeIcon"></i>
             <span class="text">顺序播放</span>
             <span class="clear" @click.stop="showConfirm"><i class="icon-clear"></i></span>
           </h1>
@@ -45,9 +45,11 @@
 <script type="text/ecmascript-6">
  import { mapGetters, mapMutations, mapActions } from 'vuex'
  import { playMode } from 'common/js/config'
+ import {playerMixin} from 'common/js/mixin'
  import Scroll from 'base/scroll/scroll'
 import Confirm from 'base/confirm/confirm.vue'
  export default {
+     mixins: [playerMixin],
      data() {
          return {
              showFlag: false
