@@ -58,6 +58,7 @@
             <span class="time time-r">{{_format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
+            <!-- changeMode和modeIcon 都是通过mixin传进来的 -->
             <div class="icon i-left" @click="changeMode">
               <div :class="modeIcon"></div>
             </div>
@@ -124,7 +125,6 @@
   import {playerMixin} from 'common/js/mixin'
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
-  import { shuffle } from 'common/js/util'
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
   export default {
@@ -173,10 +173,7 @@
       methods: {
           ...mapMutations({
               setFullScreen: 'SET_FULL_SCREEN',
-              setPlayingState: 'SET_PLAYING_STATE',
-              setCurrentIndex: 'SET_CURRENT_INDEX',
-              setPlayMode: 'SET_PLAY_MODE',
-              setPlayList: 'SET_PLAYLIST'
+              setPlayingState: 'SET_PLAYING_STATE'
           }),
           back() {
               this.setFullScreen(false)
@@ -238,24 +235,6 @@
               if (!this.songReady) { return }
               this.setPlayingState(!this.playing)
               this.currentLyric && this.currentLyric.togglePlay() // Lyric类提供实例方法togglePlay
-          },
-          changeMode() {
-              const mode = (this.mode + 1) % 3
-              this.setPlayMode(mode)
-              let list = null
-              if (mode === playMode.random) {
-                  list = shuffle(this.sequenceList)
-              } else {
-                  list = this.sequenceList
-              }
-              this.resetCurrentIndex(list)
-              this.setPlayList(list)
-          },
-          resetCurrentIndex(list) {
-              let index = list.findIndex((item) => {
-                  return item.id === this.currentSong.id
-              })
-              this.setCurrentIndex(index)
           },
           next() {
               if (!this.songReady) { return }
