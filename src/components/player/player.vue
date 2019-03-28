@@ -146,13 +146,7 @@
       computed: {
           ...mapGetters([
               'fullScreen',
-              'playlist',
-              'currentSong',
-              'playing',
-              'currentIndex',
-              'mode',
-              'sequenceList'
-
+              'currentIndex'
           ]),
           playIcon() {
               return this.playing ? 'icon-pause' : 'icon-play'

@@ -29,7 +29,11 @@ export const playlistMixin = {
 export const playerMixin = {
     computed: {
         ...mapGetters([
-            'mode'
+            'playlist',
+            'sequenceList',
+            'currentSong',
+            'mode',
+            'playing'
         ]),
         modeIcon() {
             return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
@@ -38,6 +42,7 @@ export const playerMixin = {
     methods: {
         ...mapMutations({
             setCurrentIndex: 'SET_CURRENT_INDEX',
+            setPlayingState: 'SET_PLAYING_STATE',
             setPlayMode: 'SET_PLAY_MODE',
             setPlayList: 'SET_PLAYLIST'
         }),
