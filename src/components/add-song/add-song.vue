@@ -5,10 +5,14 @@
       <h1 class="title">添加歌曲到列表</h1>
       <div class="close" @click="hide"><i class="icon-close"></i></div>
     </div>
-    <div class="search-box-wrapper"></div>
-    <div class="shortcut"></div>
-    <div class="search-result"></div>
-    <div class="search-result"></div>
+    <div class="search-box-wrapper">
+      <search-box ref="searchBox" :placeholder="'搜索歌曲'" @query="search"></search-box>
+    </div>
+    <div class="shortcut" v-show="!query"></div>
+
+    <div class="search-result" v-show="query">
+      <suggest ref="suggest" :query="query" :showSinger="showSinger"></suggest>
+    </div>
   </div>
   </transition>
 
@@ -16,10 +20,15 @@
 
 
 <script type="text/ecmascript-6">
+ import SearchBox from 'base/search-box/search-box.vue'
+ import Suggest from 'components/suggest/suggest.vue'
  export default {
      data() {
          return {
-             showFlag: false
+             showFlag: false,
+             query: '',
+             showSinger: false
+
          }
      },
      methods: {
@@ -28,8 +37,14 @@
          },
          hide() {
              this.showFlag = false
+         },
+         search(query) {
+             this.query = query
          }
-
+     },
+     components: {
+         SearchBox,
+         Suggest
      }
 
  }
