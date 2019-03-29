@@ -24,7 +24,7 @@
           </transition-group>
         </Scroll>
         <div class="list-operate">
-          <div class="add">
+          <div class="add" @click="addSong">
             <i class="icon-add"></i>
             <span class="text">添加歌曲到列队</span>
           </div>
@@ -38,6 +38,7 @@
           confirmBtnText="清空"
           @confirm="confirmClear">
       </confirm>
+      <add-song ref="addSong"></add-song>
     </div>
   </transition>
 </template>
@@ -48,6 +49,7 @@
  import {playerMixin} from 'common/js/mixin'
  import Scroll from 'base/scroll/scroll'
  import Confirm from 'base/confirm/confirm.vue'
+ import AddSong from 'components/add-song/add-song.vue'
  export default {
      mixins: [playerMixin],
      // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
@@ -106,6 +108,9 @@
                  return current.id === song.id
              })
              this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300)
+         },
+         addSong() {
+             this.$refs.addSong.show()
          }
      },
      watch: {
@@ -118,7 +123,8 @@
      },
      components: {
          Scroll,
-         Confirm
+         Confirm,
+         AddSong
      }
  }
 </script>
