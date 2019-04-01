@@ -15,6 +15,7 @@
     <div class="shortcut" v-show="!query">
       <switches
         :currentIndex="currentIndex"
+        @switch="switchItem"
         :switches="switches">
       </switches>
     </div>
@@ -63,6 +64,9 @@
          },
          selectSuggest() {
              this.saveSearchHistory(this.query)
+         },
+         switchItem(index) {
+             this.currentIndex = index
          }
      },
      components: {

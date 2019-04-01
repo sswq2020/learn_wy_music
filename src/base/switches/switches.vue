@@ -2,6 +2,7 @@
   <ul class="switches" v-show="switches.length">
     <li class="switch-item"
         v-for="(item,index) in switches"
+        @click="switchItem(index)"
         :class="{'active':currentIndex === index }">
       <span>{{item.name}}</span>
     </li>
@@ -18,6 +19,11 @@ export default {
         currentIndex: {
             type: Number,
             default: 0
+        }
+    },
+    methods: {
+        switchItem(index) {
+            this.$emit('switch', index)
         }
     }
 
