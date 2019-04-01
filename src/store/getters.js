@@ -21,3 +21,5 @@ export const currentSong = (state) => {
 }
 
 export const searchHistroy = state => state.searchHistroy
+
+export const playHistroy = state => state.playHistroy
