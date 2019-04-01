@@ -12,7 +12,12 @@
         @query="onQueryChange">
       </search-box>
     </div>
-    <div class="shortcut" v-show="!query"></div>
+    <div class="shortcut" v-show="!query">
+      <switches
+        :currentIndex="currentIndex"
+        :switches="switches">
+      </switches>
+    </div>
 
     <div class="search-result" v-show="query">
       <suggest
@@ -33,13 +38,20 @@
  import SearchBox from 'base/search-box/search-box.vue'
  import Suggest from 'components/suggest/suggest.vue'
  import {searchMixin} from 'common/js/mixin'
+ import Switches from 'base/switches/switches.vue'
  export default {
      mixins: [searchMixin],
      // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
      data() {
          return {
              showFlag: false,
-             showSinger: false
+             showSinger: false,
+             currentIndex: 0,
+             switches: [
+                 {name: '最近播放'},
+                 {name: '搜索历史'}
+             ]
+
          }
      },
      methods: {
@@ -55,7 +67,8 @@
      },
      components: {
          SearchBox,
-         Suggest
+         Suggest,
+         Switches
      }
 
  }

@@ -1,13 +1,26 @@
 <template>
-  <ul class="switches">
-    <li class="switch-item">
-      <span></span>
+  <ul class="switches" v-show="switches.length">
+    <li class="switch-item"
+        v-for="(item,index) in switches"
+        :class="{'active':currentIndex === index }">
+      <span>{{item.name}}</span>
     </li>
   </ul>
 </template>
 
 <script  type="text/ecmascript-6">
 export default {
+    props: {
+        switches: {
+            type: Array,
+            default: []
+        },
+        currentIndex: {
+            type: Number,
+            default: 0
+        }
+    }
+
 }
 </script>
 
