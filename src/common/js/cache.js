@@ -4,7 +4,7 @@ const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LENGTH = 15
 
 const PLAY_HISTORY = '__play_history__'
-const PLAY_HISTORY_MAX_LENGTH = 3
+const PLAY_HISTORY_MAX_LENGTH = 100
 
 /**
  * @author sswq

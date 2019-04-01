@@ -18,6 +18,13 @@
         @switch="switchItem"
         :switches="switches">
       </switches>
+      <div class="list-wrapper">
+        <Scroll ref="list" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
+          <div class="list-inner">
+            <song-list :songs="playHistroy"></song-list>
+          </div>
+        </Scroll>
+      </div>
     </div>
 
     <div class="search-result" v-show="query">
@@ -36,10 +43,13 @@
 
 
 <script type="text/ecmascript-6">
+ import {mapGetters} from 'vuex'
  import SearchBox from 'base/search-box/search-box.vue'
  import Suggest from 'components/suggest/suggest.vue'
  import {searchMixin} from 'common/js/mixin'
  import Switches from 'base/switches/switches.vue'
+ import Scroll from 'base/scroll/scroll'
+import SongList from 'base/song-list/song-list'
  export default {
      mixins: [searchMixin],
      // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
@@ -55,9 +65,17 @@
 
          }
      },
+     computed: {
+         ...mapGetters([
+             'playHistroy'
+         ])
+     },
      methods: {
          show() {
              this.showFlag = true
+             setTimeout(() => {
+                 this.$refs.list.refresh()
+             }, 20)
          },
          hide() {
              this.showFlag = false
@@ -72,7 +90,9 @@
      components: {
          SearchBox,
          Suggest,
-         Switches
+         Switches,
+         Scroll,
+         SongList
      }
 
  }
@@ -112,6 +132,14 @@
     .search-box-wrapper
       margin 20px
     .shortcut
+      .list-wrapper
+        position absolute
+        top 165px
+        bottom 0
+        width 100%
+        .list-scroll
+          height 100%
+          overflow hidden
     .search-result
       position fixed
       top 124px
