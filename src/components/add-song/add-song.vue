@@ -6,12 +6,12 @@
       <div class="close" @click="hide"><i class="icon-close"></i></div>
     </div>
     <div class="search-box-wrapper">
-      <search-box ref="searchBox" :placeholder="'搜索歌曲'" @query="search"></search-box>
+      <search-box ref="searchBox" :placeholder="'搜索歌曲'" @query="onQueryChange"></search-box>
     </div>
     <div class="shortcut" v-show="!query"></div>
 
     <div class="search-result" v-show="query">
-      <suggest ref="suggest" :query="query" :showSinger="showSinger"></suggest>
+      <suggest ref="suggest" :query="query" :showSinger="showSinger" @select="selectSuggest"></suggest>
     </div>
   </div>
   </transition>
@@ -22,13 +22,14 @@
 <script type="text/ecmascript-6">
  import SearchBox from 'base/search-box/search-box.vue'
  import Suggest from 'components/suggest/suggest.vue'
+ import {searchMixin} from 'common/js/mixin'
  export default {
+     mixins: [searchMixin],
+     // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
      data() {
          return {
              showFlag: false,
-             query: '',
              showSinger: false
-
          }
      },
      methods: {
@@ -38,8 +39,8 @@
          hide() {
              this.showFlag = false
          },
-         search(query) {
-             this.query = query
+         selectSuggest() {
+             this.saveSearchHistory(this.query)
          }
      },
      components: {
