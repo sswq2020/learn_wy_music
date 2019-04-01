@@ -6,12 +6,22 @@
       <div class="close" @click="hide"><i class="icon-close"></i></div>
     </div>
     <div class="search-box-wrapper">
-      <search-box ref="searchBox" :placeholder="'搜索歌曲'" @query="onQueryChange"></search-box>
+      <search-box
+        ref="searchBox"
+        :placeholder="'搜索歌曲'"
+        @query="onQueryChange">
+      </search-box>
     </div>
     <div class="shortcut" v-show="!query"></div>
 
     <div class="search-result" v-show="query">
-      <suggest ref="suggest" :query="query" :showSinger="showSinger" @select="selectSuggest"></suggest>
+      <suggest
+        ref="suggest"
+        :query="query"
+        :showSinger="showSinger"
+        @select="selectSuggest"
+        @listScroll="blurInput">
+      </suggest>
     </div>
   </div>
   </transition>

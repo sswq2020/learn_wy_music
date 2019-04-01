@@ -21,13 +21,23 @@
                 <i class="icon-clear"></i>
               </span>
             </h1>
-            <search-list ref="suggest" :searches="searchHistroy"  @select="addQuery" @deleteHistoryOne="deleteSearchHistory"></search-list>
+            <search-list
+              ref="suggest"
+              :searches="searchHistroy"
+              @select="addQuery"
+              @deleteHistoryOne="deleteSearchHistory">
+            </search-list>
           </div>
         </div>
       </scroll>
     </div>
     <div class="search-result"ref="SearchResult" v-show="query">
-      <suggest ref="suggest" @select="saveSearch"  @listScroll="blurInput" :query="query"></suggest>
+      <suggest
+        ref="suggest"
+        @select="saveSearch"
+        @listScroll="blurInput"
+        :query="query">
+      </suggest>
     </div>
     <confirm text="是否清空所有搜索历史"
              ref="confirm"
