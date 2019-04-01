@@ -115,7 +115,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { mapGetters, mapMutations } from 'vuex'
+  import { mapGetters, mapMutations, mapActions } from 'vuex'
   import animations from 'create-keyframe-animation' // 为什么要引入第三方的js动画库来写css3动画,因为需要实现知道动画下（x,y)坐标,但是这里是动态生成的，需要通过js获取
   import Lyric from 'lyric-parser' // 作者自己写的第三方库
   import Scroll from 'base/scroll/scroll'
@@ -170,6 +170,9 @@
               setFullScreen: 'SET_FULL_SCREEN',
               setPlayingState: 'SET_PLAYING_STATE'
           }),
+          ...mapActions([
+              'savePlayHistory'
+          ]),
           back() {
               this.setFullScreen(false)
           },
@@ -247,6 +250,7 @@
           },
           ready() {
               this.songReady = true
+              this.savePlayHistory()
           },
           error() {
               this.songReady = true

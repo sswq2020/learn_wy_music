@@ -119,3 +119,17 @@ export const deleteSonglist = function({commit}) {
     commit(types.SET_CURRENT_INDEX, -1)
     commit(types.SET_PLAYING_STATE, false)
 }
+
+export const savePlayHistory = function({commit, state, getters}) {
+    const currentsong = getters.currentSong
+    let history = state.playHistroy.slice()
+    const index = findIndex(history, currentsong)
+    if (index > -1) {
+        if (index === history.length - 1) {
+            return
+        }
+        history.splice(index, 1)
+    }
+    history.push(currentsong)
+    commit(types.SET_PLAY_HISTORY, history)
+}
