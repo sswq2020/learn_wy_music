@@ -72,7 +72,7 @@ export function loadPlayHistroy () {
  * @author sswq
  * @description 保存播放的歌曲目录，相当于最近播放的100首歌
  * */
-export function savePlayHistorylist(song) {
+export function savePlay(song) {
     let history = storage.get(PLAY_HISTORY, [])
     insertArray(history, song, PLAY_HISTORY_MAX_LENGTH, (item) => {
         return item.id === song.id
