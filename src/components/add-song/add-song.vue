@@ -18,12 +18,12 @@
         @switch="switchItem"
         :switches="switches">
       </switches>
-      <div class="list-wrapper">
-        <Scroll ref="list" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
+      <div class="list-wrap">
+        <scroll ref="list" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
           <div class="list-inner">
             <song-list :songs="playHistroy"></song-list>
           </div>
-        </Scroll>
+        </scroll>
       </div>
     </div>
 
@@ -132,7 +132,7 @@ import SongList from 'base/song-list/song-list'
     .search-box-wrapper
       margin 20px
     .shortcut
-      .list-wrapper
+      .list-wrap
         position absolute
         top 165px
         bottom 0
@@ -140,6 +140,8 @@ import SongList from 'base/song-list/song-list'
         .list-scroll
           height 100%
           overflow hidden
+          .list-inner
+            padding 20px 30px
     .search-result
       position fixed
       top 124px
