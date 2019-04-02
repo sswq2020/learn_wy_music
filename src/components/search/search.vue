@@ -22,7 +22,6 @@
               </span>
             </h1>
             <search-list
-              ref="suggest"
               :searches="searchHistroy"
               @select="addQuery"
               @deleteHistoryOne="deleteSearchHistory">

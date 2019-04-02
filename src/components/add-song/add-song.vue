@@ -19,9 +19,21 @@
         :switches="switches">
       </switches>
       <div class="list-wrap">
-        <scroll ref="list" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
+        <scroll ref="playList" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
           <div class="list-inner">
-            <song-list :songs="playHistroy" @select="selectItem"></song-list>
+            <song-list
+              :songs="playHistroy"
+              @select="selectItem">
+            </song-list>
+          </div>
+        </scroll>
+        <scroll ref="searchHistroyList" v-if="currentIndex === 1" class="list-scroll" :data="searchHistroy">
+          <div class="list-inner">
+            <search-list
+              @deleteHistoryOne="deleteSearchHistory"
+              @select="addQuery"
+              :searches="searchHistroy">
+            </search-list>
           </div>
         </scroll>
       </div>
@@ -31,7 +43,7 @@
         ref="suggest"
         :query="query"
         :showSinger="showSinger"
-        @select="selectSuggest"
+        @select="saveSearch"
         @listScroll="blurInput">
       </suggest>
     </div>
@@ -43,6 +55,7 @@
 <script type="text/ecmascript-6">
  import {mapGetters, mapActions} from 'vuex'
  import SearchBox from 'base/search-box/search-box.vue'
+ import SearchList from 'components/search-list/search-list.vue'
  import Suggest from 'components/suggest/suggest.vue'
  import {searchMixin} from 'common/js/mixin'
  import Song from 'common/js/song'
@@ -61,7 +74,6 @@ import SongList from 'base/song-list/song-list'
                  {name: '最近播放'},
                  {name: '搜索历史'}
              ]
-
          }
      },
      computed: {
@@ -76,14 +88,11 @@ import SongList from 'base/song-list/song-list'
          show() {
              this.showFlag = true
              setTimeout(() => {
-                 this.$refs.list.refresh()
+                 this.$refs.playList.refresh()
              }, 20)
          },
          hide() {
              this.showFlag = false
-         },
-         selectSuggest() {
-             this.saveSearchHistory(this.query)
          },
          switchItem(index) {
              this.currentIndex = index
@@ -100,7 +109,18 @@ import SongList from 'base/song-list/song-list'
          Suggest,
          Switches,
          Scroll,
-         SongList
+         SongList,
+         SearchList
+     },
+     watch: {
+         currentIndex(newY) {
+             const list = [
+                 'playList', 'searchHistroyList'
+             ]
+             setTimeout(() => {
+                 this.$refs[list[newY]].refresh()
+             }, 20)
+         }
      }
 
  }
