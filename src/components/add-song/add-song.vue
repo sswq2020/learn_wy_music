@@ -19,7 +19,7 @@
         :switches="switches">
       </switches>
       <div class="list-wrap">
-        <scroll ref="playList" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
+        <scroll ref="songList" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
           <div class="list-inner">
             <song-list
               :songs="playHistroy"
@@ -27,7 +27,7 @@
             </song-list>
           </div>
         </scroll>
-        <scroll ref="searchHistroyList" v-if="currentIndex === 1" class="list-scroll" :data="searchHistroy">
+        <scroll ref="searchList" v-if="currentIndex === 1" class="list-scroll" :data="searchHistroy">
           <div class="list-inner">
             <search-list
               @deleteHistoryOne="deleteSearchHistory"
@@ -55,13 +55,14 @@
 <script type="text/ecmascript-6">
  import {mapGetters, mapActions} from 'vuex'
  import SearchBox from 'base/search-box/search-box.vue'
+ import Switches from 'base/switches/switches.vue'
+ import Scroll from 'base/scroll/scroll'
+ import SongList from 'base/song-list/song-list'
  import SearchList from 'components/search-list/search-list.vue'
  import Suggest from 'components/suggest/suggest.vue'
  import {searchMixin} from 'common/js/mixin'
  import Song from 'common/js/song'
- import Switches from 'base/switches/switches.vue'
- import Scroll from 'base/scroll/scroll'
-import SongList from 'base/song-list/song-list'
+ const SWITCH_LIST = ['songList', 'searchList']
  export default {
      mixins: [searchMixin],
      // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
@@ -88,7 +89,7 @@ import SongList from 'base/song-list/song-list'
          show() {
              this.showFlag = true
              setTimeout(() => {
-                 this.$refs.playList.refresh()
+                 this.$refs[SWITCH_LIST[this.currentIndex]].refresh()
              }, 20)
          },
          hide() {
@@ -113,16 +114,14 @@ import SongList from 'base/song-list/song-list'
          SearchList
      },
      watch: {
-         currentIndex(newY) {
-             const list = [
-                 'playList', 'searchHistroyList'
-             ]
-             setTimeout(() => {
-                 this.$refs[list[newY]].refresh()
-             }, 20)
+         query(newQuery) { // 这里query的作用就是输入字变化，带来的dom的改变
+             if (!newQuery) {
+                 setTimeout(() => {
+                     this.$refs[SWITCH_LIST[this.currentIndex]].refresh()
+                 }, 20)
+             }
          }
      }
-
  }
 </script>
 
