@@ -21,7 +21,7 @@
       <div class="list-wrap">
         <scroll ref="list" v-if="currentIndex === 0" class="list-scroll" :data="playHistroy">
           <div class="list-inner">
-            <song-list :songs="playHistroy"></song-list>
+            <song-list :songs="playHistroy" @select="selectItem"></song-list>
           </div>
         </scroll>
       </div>
@@ -43,7 +43,7 @@
 
 
 <script type="text/ecmascript-6">
- import {mapGetters} from 'vuex'
+ import {mapGetters, mapActions} from 'vuex'
  import SearchBox from 'base/search-box/search-box.vue'
  import Suggest from 'components/suggest/suggest.vue'
  import {searchMixin} from 'common/js/mixin'
@@ -71,6 +71,9 @@ import SongList from 'base/song-list/song-list'
          ])
      },
      methods: {
+         ...mapActions([
+             'savePlayHistory'
+         ]),
          show() {
              this.showFlag = true
              setTimeout(() => {
@@ -85,6 +88,12 @@ import SongList from 'base/song-list/song-list'
          },
          switchItem(index) {
              this.currentIndex = index
+         },
+         selectItem(item, index) {
+             if (index === 0) {
+                 return
+             }
+             this.savePlayHistory(item)
          }
      },
      components: {
