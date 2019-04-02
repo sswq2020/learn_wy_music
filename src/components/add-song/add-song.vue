@@ -26,7 +26,6 @@
         </scroll>
       </div>
     </div>
-
     <div class="search-result" v-show="query">
       <suggest
         ref="suggest"
@@ -38,7 +37,6 @@
     </div>
   </div>
   </transition>
-
 </template>
 
 
@@ -47,6 +45,7 @@
  import SearchBox from 'base/search-box/search-box.vue'
  import Suggest from 'components/suggest/suggest.vue'
  import {searchMixin} from 'common/js/mixin'
+ import Song from 'common/js/song'
  import Switches from 'base/switches/switches.vue'
  import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
@@ -72,7 +71,7 @@ import SongList from 'base/song-list/song-list'
      },
      methods: {
          ...mapActions([
-             'savePlayHistory'
+             'insertSong'
          ]),
          show() {
              this.showFlag = true
@@ -89,11 +88,11 @@ import SongList from 'base/song-list/song-list'
          switchItem(index) {
              this.currentIndex = index
          },
-         selectItem(item, index) {
+         selectItem(song, index) {
              if (index === 0) {
                  return
              }
-             this.savePlayHistory(item)
+             this.insertSong(new Song(song)) // song是对象，但是缺少_getLyric方法,通过new Song(song),生成的对象有_getLyric
          }
      },
      components: {
