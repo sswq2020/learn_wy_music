@@ -34,6 +34,9 @@ export default {
     },
     methods: {
         async _getSongList() {
+            if (!this.disc.dissid) {
+                this.$router.push('/recommend')
+            }
             const res = await getSongList(this.disc.dissid)
             if (res.code === ERR_OK) {
                 let list = await getIncludeUrlSongList(res.cdlist[0].songlist)
