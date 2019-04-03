@@ -92,6 +92,16 @@ const api = {
         pathRewrite: { '/api/getPurlUrl': '' },
         changeOrigin: true
     },
+    _postPurlUrlByustbhuangyi:{
+      context: '/api/postPurlUrlByustbhuangyi',
+      target:'http://ustbhuangyi.com/music/api/getPurlUrl',
+      headers: {
+        referer: 'http://ustbhuangyi.com/music/',
+        host: 'ustbhuangyi.com'
+      },
+      pathRewrite: { '^/api/postPurlUrlByustbhuangyi': '' },
+      changeOrigin: true
+    }
 }
 
 module.exports = {
@@ -107,7 +117,8 @@ module.exports = {
             api._getToplistSongs,
             api._getHotKey,
             api._getSearch,
-            api._getPurlUrl
+            api._getPurlUrl,
+            api._postPurlUrlByustbhuangyi
         ],
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST

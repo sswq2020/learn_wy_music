@@ -39,3 +39,30 @@ export function getPurlUrl(ids) {
         return Promise.resolve(res.data)
     })
 }
+
+/**
+ * @author sswq
+ * @description HuangYi老师的接口
+ * @param songmids {Array} ['songmid1','songmid2','songmid3']
+ */
+export function postPurlUrl(songmids) {
+    const url = '/api/postPurlUrlByustbhuangyi'
+    const postParams = {
+        comm: {...commonParams, needNewCode: 1, platform: 'h5', uin: 0},
+        req_0: {
+            method: 'CgiGetVkey',
+            module: 'vkey.GetVkeyServer',
+            param: {
+                guid: '4029775892',
+                loginflag: 0,
+                platform: '23',
+                uin: '0',
+                songmid: songmids,
+                songtype: new Array(songmids.length).fill(0)
+            }
+        }
+    }
+    return axios.post(url, postParams).then((res) => {
+        return Promise.resolve(res.data)
+    })
+}
