@@ -53,7 +53,7 @@ export default {
         _noramlizeSongs(list) {
             let ret = []
             list.forEach(item => {
-                if (item.albummid && item.songid) {
+                if (item.albummid && item.songid && item.url.indexOf('vkey') > -1) {
                     ret.push(createSong(item)) // 对每个song进行new Song操作创建实例
                 }
             })

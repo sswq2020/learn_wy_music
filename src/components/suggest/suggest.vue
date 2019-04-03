@@ -99,9 +99,9 @@ export default {
         },
         _normalizeSongs(list) {
             let ret = []
-            list.forEach((list) => {
-                if (list.songid && list.albumid) {
-                    ret.push(createSong(list))
+            list.forEach((item) => {
+                if (item.songid && item.albumid && item.url.indexOf('vkey') > -1) {
+                    ret.push(createSong(item))
                 }
             })
             return ret

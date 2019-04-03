@@ -47,7 +47,7 @@ export default {
             let ret = []
             list.forEach(item => {
                 let {musicData} = item
-                if (musicData.albummid && musicData.songid) {
+                if (musicData.albummid && musicData.songid && musicData.url.indexOf('vkey') > -1) {
                     ret.push(createSong(musicData)) // 对每个song进行new Song操作创建实例
                 }
             })
