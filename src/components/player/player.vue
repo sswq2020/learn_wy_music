@@ -526,7 +526,6 @@
             font-size $font-size-medium
             &.current
               color $color-text
-
     .bottom
       position absolute
       bottom 50px
@@ -623,6 +622,7 @@
       line-height 20px
       overflow hidden
       .name
+        no-wrap()
         margin-bottom 2px
         font-size $font-size-medium
         color $color-text
