@@ -28,7 +28,7 @@ export function _debounce(func, delay) {
     }
 }
 
-function getSongMid(list) {
+function getSongMid(list, needArray = false) {
     let ret = []
     if (!_.isArray(list)) {
         list = [list]
@@ -42,24 +42,11 @@ function getSongMid(list) {
             ret.push(musicData.songmid)
         }
     })
-    return ret.join()
-}
-
-function getSongMidList(list) {
-    let ret = []
-    if (!_.isArray(list)) {
-        list = [list]
+    if (needArray) {
+        return ret
+    } else {
+        return ret.join()
     }
-    /* 对应三种不同的数据结构 */
-    list.forEach(item => {
-        let {songmid, musicData} = item
-        if (songmid) {
-            ret.push(songmid)
-        } else if (musicData && musicData.songmid) {
-            ret.push(musicData.songmid)
-        }
-    })
-    return ret
 }
 
 function inSertUrl(origin = [], target = [], props) {
@@ -86,7 +73,7 @@ export async function getUrlSongList (songlist) {
 
 export async function getIncludeUrlSongList(songlist) {
     let songUrlList = []
-    let res = await postPurlUrl(getSongMidList(songlist))
+    let res = await postPurlUrl(getSongMid(songlist, true))
     if (res.code === 0) {
         const list = res.req_0.data.midurlinfo
         list && list.length && list.forEach((item) => {
