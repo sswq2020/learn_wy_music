@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {getPurlUrl} from 'api/song'
+import {getPurlUrl, postPurlUrl} from 'api/song'
 
 export function shuffle(arr) {
     let _arr = arr.slice() // 小技巧相当于原数组的拷贝,原数组不变
@@ -45,6 +45,23 @@ function getSongMid(list) {
     return ret.join()
 }
 
+function getSongMidList(list) {
+    let ret = []
+    if (!_.isArray(list)) {
+        list = [list]
+    }
+    /* 对应三种不同的数据结构 */
+    list.forEach(item => {
+        let {songmid, musicData} = item
+        if (songmid) {
+            ret.push(songmid)
+        } else if (musicData && musicData.songmid) {
+            ret.push(musicData.songmid)
+        }
+    })
+    return ret
+}
+
 function inSertUrl(origin = [], target = [], props) {
     for (let i = 0; i < origin.length; i++) {
         let {musicData} = origin[i]
@@ -57,11 +74,24 @@ function inSertUrl(origin = [], target = [], props) {
     return origin
 }
 
-export async function getIncludeUrlSongList (songlist) {
+export async function getUrlSongList (songlist) {
     let songUrlList
     let res = await getPurlUrl(getSongMid(songlist))
     if (res.errno === 0) {
         songUrlList = res.data
+    }
+    songlist = inSertUrl(songlist, songUrlList, 'url')
+    return songlist
+}
+
+export async function getIncludeUrlSongList(songlist) {
+    let songUrlList = []
+    let res = await postPurlUrl(getSongMidList(songlist))
+    if (res.code === 0) {
+        const list = res.req_0.data.midurlinfo
+        list && list.length && list.forEach((item) => {
+            songUrlList.push(item.purl || '')
+        })
     }
     songlist = inSertUrl(songlist, songUrlList, 'url')
     return songlist
