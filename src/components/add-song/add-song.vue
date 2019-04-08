@@ -43,11 +43,16 @@
         ref="suggest"
         :query="query"
         :showSinger="showSinger"
-        @select="saveSearch"
+        @select="selectSuggest"
         @listScroll="blurInput">
       </suggest>
     </div>
-    <top-tip></top-tip>
+    <top-tip ref="topTip">
+      <div class="tip-title">
+        <i class="icon-ok"></i>
+        <span class="text">1首歌曲已经添加到播放列队</span>
+      </div>
+    </top-tip>
   </div>
   </transition>
 </template>
@@ -100,11 +105,19 @@
          switchItem(index) {
              this.currentIndex = index
          },
+         selectSuggest() {
+             this.saveSearch()
+             this.$refs.topTip.show()
+         },
          selectItem(song, index) {
              if (index === 0) {
                  return
              }
              this.insertSong(new Song(song)) // song是对象，但是缺少_getLyric方法,通过new Song(song),生成的对象有_getLyric
+             this.showTip()
+         },
+         showTip() {
+             this.$refs.topTip.show()
          }
      },
      components: {
@@ -177,10 +190,15 @@
       top 124px
       bottom 0
       width 100%
-    .top-tip
-      position fixed
-      top 0
-      width 100%
-      z-index 500
-      background #666
+    .tip-title
+      text-align center
+      padding 18px 0
+      font-size 0
+      .icon-ok
+        font-size $font-size-medium
+        color $color-theme
+        margin-right 4px
+      .text
+        font-size $font-size-medium
+        color $color-text
 </style>
