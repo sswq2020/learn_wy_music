@@ -47,6 +47,7 @@
         @listScroll="blurInput">
       </suggest>
     </div>
+    <top-tip></top-tip>
   </div>
   </transition>
 </template>
@@ -58,6 +59,7 @@
  import Switches from 'base/switches/switches.vue'
  import Scroll from 'base/scroll/scroll'
  import SongList from 'base/song-list/song-list'
+ import TopTip from 'base/top-tip/top-tip'
  import SearchList from 'components/search-list/search-list.vue'
  import Suggest from 'components/suggest/suggest.vue'
  import {searchMixin} from 'common/js/mixin'
@@ -111,7 +113,8 @@
          Switches,
          Scroll,
          SongList,
-         SearchList
+         SearchList,
+         TopTip
      },
      watch: {
          query(newQuery) { // 这里query的作用就是输入字变化，带来的dom的改变

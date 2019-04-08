@@ -8,7 +8,19 @@
 
 <script type="text/ecmascript-6">
 export default {
-
+    data() {
+        return {
+            showFlag: false
+        }
+    },
+    methods: {
+        show() {
+            this.showFlag = true
+        },
+        hide() {
+            this.showFlag = false
+        }
+    }
 }
 </script>
 
