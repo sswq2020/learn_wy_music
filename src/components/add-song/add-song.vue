@@ -27,7 +27,7 @@
             </song-list>
           </div>
         </scroll>
-        <scroll ref="searchList" v-if="currentIndex === 1" class="list-scroll" :data="searchHistroy">
+        <scroll ref="searchList" v-if="currentIndex === 1" class="list-scroll" :data="searchHistroy" :refreshDelay="delay">
           <div class="list-inner">
             <search-list
               @deleteHistoryOne="deleteSearchHistory"
@@ -78,6 +78,7 @@
              showFlag: false,
              showSinger: false,
              currentIndex: 0,
+             delay: 100,
              switches: [
                  {name: '最近播放'},
                  {name: '搜索历史'}

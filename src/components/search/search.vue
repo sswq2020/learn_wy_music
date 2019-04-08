@@ -4,7 +4,7 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div class="shortcut-wrapper" ref="ShortCutWrapper" v-show="!query">
-      <scroll ref="shortcut" class="shortcut" :data="shortcutArr">
+      <scroll ref="shortcut" class="shortcut" :data="shortcutArr" :refreshDelay="delay">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -62,7 +62,8 @@
       data() {
           return {
               hotkey: [],
-              query: ''
+              query: '',
+              delay: 100
           }
       },
       components: {
