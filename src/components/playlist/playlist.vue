@@ -9,7 +9,7 @@
             <span class="clear" @click.stop="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <Scroll ref="listContent" class="list-content" :data="sequenceList">
+        <Scroll ref="listContent" class="list-content" :data="sequenceList" :refreshDelay="delay">
           <transition-group name="list" tag="ul">
             <li :key="item.id" ref="listItem" @click="selectItem(item,index)" class="item" v-for="(item,index) in sequenceList">
               <i class="current" :class="getCurrentIcon(item)"></i>
@@ -55,7 +55,8 @@
      // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
      data() {
          return {
-             showFlag: false
+             showFlag: false,
+             delay: 100
          }
      },
      computed: {
