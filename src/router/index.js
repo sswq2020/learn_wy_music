@@ -7,6 +7,7 @@ const Search = () => import('components/search/search')
 const SingerDetail = () => import('components/singer-detail/singer-detail.vue')
 const Disc = () => import('components/disc/disc.vue')
 const toplist = () => import('components/top-list/top-list.vue')
+const UserCenter = () => import('components/user-center/user-center.vue')
 
 Vue.use(Router)
 const routes = [{
@@ -37,6 +38,9 @@ const routes = [{
         path: ':id',
         component: toplist
     }]
+}, {
+    path: '/usercenter',
+    component: UserCenter
 }]
 export default new Router({
     routes

@@ -2,13 +2,22 @@
     <div class="m-header">
         <div class="icon"></div>
         <h1 class="text">QQ Music</h1>
-        <div class="mine">
+        <div class="mine" @click="goUserCenter">
             <i class="icon-mine"></i>
         </div>
     </div>
 </template>
 
 <script type="text/ecmascript-6">
+  export default{
+      methods: {
+          goUserCenter() {
+              this.$router.push({
+                  path: '/usercenter'
+              })
+          }
+      }
+  }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
