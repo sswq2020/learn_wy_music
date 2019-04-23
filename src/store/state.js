@@ -11,7 +11,8 @@ const state = {
     disc: {}, // 歌单
     toplist: {}, // 排行耪
     searchHistroy: loadSearch(), // 搜素过的历史,从本地localStorage读取
-    playHistroy: loadPlayHistroy() // 播放的历史,从本地localStorage读取
+    playHistroy: loadPlayHistroy(), // 播放的历史,从本地localStorage读取
+    favoriteList: [] // 喜欢收藏的歌曲列表
 }
 
 export default state
