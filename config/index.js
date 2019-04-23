@@ -104,22 +104,14 @@ const api = {
     }
 }
 
+const proxyTableArray = Object.values(api)
+
 module.exports = {
     dev: {
         // Paths
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
-        proxyTable: [
-            api._getDiscLists,
-            api._getLyric,
-            api._getCdInfo,
-            api._getToplists,
-            api._getToplistSongs,
-            api._getHotKey,
-            api._getSearch,
-            api._getPurlUrl,
-            api._postPurlUrlByustbhuangyi
-        ],
+        proxyTable: proxyTableArray,
         // Various Dev Server settings
         host: 'localhost', // can be overwritten by process.env.HOST
         port: 8082, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
