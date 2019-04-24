@@ -4,7 +4,8 @@ import { shuffle } from 'common/js/util'
 import { saveSearch,
     deleteSearchHistoryItem,
     deleteSearchHistoryAll,
-    savePlay
+    savePlay,
+    saveFavorite
 } from 'common/js/cache'
 
 function findIndex(list, song) {
@@ -126,4 +127,9 @@ export const deleteSonglist = function({commit}) {
 
 export const savePlayHistory = function({commit}, song) {
     commit(types.SET_PLAY_HISTORY, savePlay(song))
+}
+
+export const saveFavoriteSong = function({commit}, song) {
+    debugger
+    commit(types.SET_FAVORITE_LIST, saveFavorite(song))
 }

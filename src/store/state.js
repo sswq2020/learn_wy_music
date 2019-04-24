@@ -1,5 +1,5 @@
 import { playMode } from 'common/js/config'
-import { loadSearch, loadPlayHistroy } from 'common/js/cache'
+import { loadSearch, loadPlayHistroy, loadFavorite } from 'common/js/cache'
 const state = {
     singer: {}, // 歌手
     playing: false, // 播放和暂停
@@ -12,7 +12,7 @@ const state = {
     toplist: {}, // 排行耪
     searchHistroy: loadSearch(), // 搜素过的历史,从本地localStorage读取
     playHistroy: loadPlayHistroy(), // 播放的历史,从本地localStorage读取
-    favoriteList: [] // 喜欢收藏的歌曲列表
+    favoriteList: loadFavorite() // 喜欢收藏的歌曲列表
 }
 
 export default state

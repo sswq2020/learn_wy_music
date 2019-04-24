@@ -6,6 +6,9 @@ const SEARCH_MAX_LENGTH = 15
 const PLAY_HISTORY = '__play_history__'
 const PLAY_HISTORY_MAX_LENGTH = 100
 
+const FAVORITE = '__favorite__'
+const FAVORITE_MAX_LENGTH = 10
+
 /**
  * @author sswq
  * @description 保存搜索的关键字,最多15条
@@ -79,4 +82,18 @@ export function savePlay(song) {
     })
     storage.set(PLAY_HISTORY, history)
     return history
+}
+
+export function saveFavorite(song) {
+    let favorite = storage.get(FAVORITE, [])
+    favorite.unshift(song)
+    if (favorite.length > FAVORITE_MAX_LENGTH) {
+        favorite.pop()
+    }
+    storage.set(FAVORITE, favorite)
+    return favorite
+}
+
+export function loadFavorite () {
+    return storage.get(FAVORITE, [])
 }
