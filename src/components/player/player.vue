@@ -72,7 +72,7 @@
               <div @click="next" class="icon-next" :class="disableCls"></div>
             </div>
             <div class="icon i-right">
-              <div class="icon-not-favorite"></div>
+              <div :class="favoriteIcon" @click.stop="toggleFavorite"></div>
             </div>
           </div>
         </div>
@@ -110,7 +110,6 @@
            @error="error">
     </audio>
 
-
   </div>
 </template>
 
@@ -147,7 +146,8 @@
       computed: {
           ...mapGetters([
               'fullScreen',
-              'currentIndex'
+              'currentIndex',
+              'favoriteList'
           ]),
           playIcon() {
               return this.playing ? 'icon-pause' : 'icon-play'
@@ -163,6 +163,17 @@
           },
           percent() {
               return (this.currentTime) / (this.currentSong.duration)
+          },
+          favoriteIcon() {
+              let index = this.favoriteList.findIndex((song) => {
+                  return this.currentSong.id === song.id
+              })
+              console.log(index > -1 ? '收藏' : '未收藏')
+              if (index > -1) {
+                  return 'icon-favorite'
+              } else {
+                  return 'icon-not-favorite'
+              }
           }
       },
       methods: {
@@ -171,7 +182,9 @@
               setPlayingState: 'SET_PLAYING_STATE'
           }),
           ...mapActions([
-              'savePlayHistory'
+              'savePlayHistory',
+              'saveFavoriteSong',
+              'deleteFavoriteSong'
           ]),
           back() {
               this.setFullScreen(false)
@@ -376,6 +389,12 @@
           },
           showPlaylist() {
               this.$refs.playlist.show()
+          },
+          toggleFavorite() {
+              let index = this.favoriteList.findIndex((song) => {
+                  return this.currentSong.id === song.id
+              })
+              index < 0 ? this.saveFavoriteSong(this.currentSong) : this.deleteFavoriteSong(index)
           }
       },
       watch: {
@@ -575,7 +594,11 @@
             text-align center
             padding 0 20px
           &.i-right
-            text-align  left
+            text-align left
+            .icon-not-favorite
+              color $color-theme
+            .icon-favorite
+              color $color-sub-theme
     &.normal-enter-active, &.normal-leave-active
       transition all 0.4s
       .top,.bottom

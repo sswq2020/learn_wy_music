@@ -14,8 +14,8 @@
             <li :key="item.id" ref="listItem" @click="selectItem(item,index)" class="item" v-for="(item,index) in sequenceList">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
-              <span class="like">
-                <i class="icon-not-favorite"></i>
+              <span class="like" @click.stop="toggleFavorite(item)">
+                <i :class="favoriteIcon(item)"></i>
               </span>
               <span class="delete" @click.stop="deleteOne(item,index)">
                 <i class="icon-delete"></i>
@@ -44,7 +44,7 @@
 </template>
 
 <script type="text/ecmascript-6">
- import { mapActions } from 'vuex'
+ import { mapActions, mapGetters } from 'vuex'
  import { playMode } from 'common/js/config'
  import {playerMixin} from 'common/js/mixin'
  import Scroll from 'base/scroll/scroll'
@@ -60,6 +60,9 @@
          }
      },
      computed: {
+         ...mapGetters([
+             'favoriteList'
+         ]),
          ModeText() {
              return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.loop ? '单曲循环' : '随机播放'
          }
@@ -67,7 +70,9 @@
      methods: {
          ...mapActions([
              'deleteSong',
-             'deleteSonglist'
+             'deleteSonglist',
+             'saveFavoriteSong',
+             'deleteFavoriteSong'
          ]),
          show() {
              setTimeout(() => {
@@ -112,6 +117,23 @@
          },
          addSong() {
              this.$refs.addSong.show()
+         },
+         toggleFavorite(selectItem) {
+             let index = this.favoriteList.findIndex((song) => {
+                 return selectItem.id === song.id
+             })
+             index < 0 ? this.saveFavoriteSong(selectItem) : this.deleteFavoriteSong(index)
+         },
+         favoriteIcon(sequenceItem) {
+             let index = this.favoriteList.findIndex((song) => {
+                 return sequenceItem.id === song.id
+             })
+             console.log(index > -1 ? '收藏' : '未收藏')
+             if (index > -1) {
+                 return 'icon-favorite'
+             } else {
+                 return 'icon-not-favorite'
+             }
          }
      },
      watch: {
@@ -199,8 +221,11 @@
             .like
               position relative
               font-size $font-size-small
-              color $color-theme
               margin-right 15px
+              .icon-not-favorite
+                color $color-theme
+              .icon-favorite
+                color $color-sub-theme
             .delete
               position relative
               font-size $font-size-small
