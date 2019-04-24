@@ -50,6 +50,7 @@
  import Scroll from 'base/scroll/scroll'
  import Confirm from 'base/confirm/confirm.vue'
  import AddSong from 'components/add-song/add-song.vue'
+ import { findIndex } from 'common/js/util'
  export default {
      mixins: [playerMixin],
      // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
@@ -86,11 +87,9 @@
          getCurrentIcon(item) {
              return item.id === this.currentSong.id ? 'icon-play' : ''
          },
-         selectItem(item, index) {
+         selectItem(sequenceItem, index) {
              if (this.mode === playMode.random) {
-                 index = this.playlist.findIndex((song) => {
-                     return item.id === song.id
-                 })
+                 index = findIndex(this.playlist, sequenceItem)
              }
              this.setCurrentIndex(index)
              this.setPlayingState(true)
@@ -109,9 +108,7 @@
              this.hide()
          },
          scrollToCurrent(current) {
-             const index = this.sequenceList.findIndex((song) => {
-                 return current.id === song.id
-             })
+             const index = findIndex(this.sequenceList, current)
              this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300)
          },
          addSong() {
@@ -121,15 +118,8 @@
              this.handleFavoriteSong(selectItem)
          },
          favoriteIcon(sequenceItem) {
-             let index = this.favoriteList.findIndex((song) => {
-                 return sequenceItem.id === song.id
-             })
-             console.log(index > -1 ? '收藏' : '未收藏')
-             if (index > -1) {
-                 return 'icon-favorite'
-             } else {
-                 return 'icon-not-favorite'
-             }
+             let index = findIndex(this.favoriteList, sequenceItem)
+             return (index > -1) ? 'icon-favorite' : 'icon-not-favorite'
          }
      },
      watch: {

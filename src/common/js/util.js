@@ -83,3 +83,16 @@ export async function getIncludeUrlSongList(songlist) {
     songlist = inSertUrl(songlist, songUrlList, 'url')
     return songlist
 }
+
+/**
+ * @author sswq
+ * @param list {Array} 歌曲数组
+ * @param song {Object} 查找的song对象
+ * @returns {Number} 所在歌曲位置
+ * @description 总是插入数组的第一个,同时长度超过最大限制，会删除最后一个
+ * */
+export function findIndex(list, song) {
+    return list.findIndex((item) => {
+        return item.id === song.id
+    })
+}

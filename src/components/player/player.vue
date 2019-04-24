@@ -124,6 +124,7 @@
   import {playerMixin} from 'common/js/mixin'
   import { prefixStyle } from 'common/js/dom'
   import { playMode } from 'common/js/config'
+  import { findIndex } from 'common/js/util'
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
   // 下面代码中大量没有定义的变量或者方法都是基于mixins,所以找不到定义去mixins里找
@@ -165,15 +166,8 @@
               return (this.currentTime) / (this.currentSong.duration)
           },
           favoriteIcon() {
-              let index = this.favoriteList.findIndex((song) => {
-                  return this.currentSong.id === song.id
-              })
-              console.log(index > -1 ? '收藏' : '未收藏')
-              if (index > -1) {
-                  return 'icon-favorite'
-              } else {
-                  return 'icon-not-favorite'
-              }
+              let index = findIndex(this.favoriteList, this.currentSong)
+              return (index > -1) ? 'icon-favorite' : 'icon-not-favorite'
           }
       },
       methods: {
