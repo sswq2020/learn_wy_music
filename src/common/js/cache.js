@@ -7,7 +7,7 @@ const PLAY_HISTORY = '__play_history__'
 const PLAY_HISTORY_MAX_LENGTH = 100
 
 const FAVORITE = '__favorite__'
-const FAVORITE_MAX_LENGTH = 10
+const FAVORITE_MAX_LENGTH = 30
 
 /**
  * @author sswq
