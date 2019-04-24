@@ -71,8 +71,7 @@
          ...mapActions([
              'deleteSong',
              'deleteSonglist',
-             'saveFavoriteSong',
-             'deleteFavoriteSong'
+             'handleFavoriteSong'
          ]),
          show() {
              setTimeout(() => {
@@ -119,10 +118,7 @@
              this.$refs.addSong.show()
          },
          toggleFavorite(selectItem) {
-             let index = this.favoriteList.findIndex((song) => {
-                 return selectItem.id === song.id
-             })
-             index < 0 ? this.saveFavoriteSong(selectItem) : this.deleteFavoriteSong(index)
+             this.handleFavoriteSong(selectItem)
          },
          favoriteIcon(sequenceItem) {
              let index = this.favoriteList.findIndex((song) => {

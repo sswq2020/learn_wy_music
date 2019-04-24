@@ -131,10 +131,11 @@ export const savePlayHistory = function({commit}, song) {
     commit(types.SET_PLAY_HISTORY, savePlay(song))
 }
 
-export const saveFavoriteSong = function({commit}, song) {
-    commit(types.SET_FAVORITE_LIST, saveFavorite(song))
-}
-
-export const deleteFavoriteSong = function({commit}, index) {
-    commit(types.SET_FAVORITE_LIST, deleteFavorite(index))
+export const handleFavoriteSong = function({commit, state}, song) {
+    let index = findIndex(state.favoriteList, song)
+    if (index < 0) {
+        commit(types.SET_FAVORITE_LIST, saveFavorite(song))
+    } else {
+        commit(types.SET_FAVORITE_LIST, deleteFavorite(index))
+    }
 }

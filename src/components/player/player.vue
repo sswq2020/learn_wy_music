@@ -183,8 +183,7 @@
           }),
           ...mapActions([
               'savePlayHistory',
-              'saveFavoriteSong',
-              'deleteFavoriteSong'
+              'handleFavoriteSong'
           ]),
           back() {
               this.setFullScreen(false)
@@ -391,10 +390,7 @@
               this.$refs.playlist.show()
           },
           toggleFavorite() {
-              let index = this.favoriteList.findIndex((song) => {
-                  return this.currentSong.id === song.id
-              })
-              index < 0 ? this.saveFavoriteSong(this.currentSong) : this.deleteFavoriteSong(index)
+              this.handleFavoriteSong(this.currentSong)
           }
       },
       watch: {
