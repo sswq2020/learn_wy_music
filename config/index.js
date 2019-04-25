@@ -92,15 +92,15 @@ const api = {
         pathRewrite: { '/api/getPurlUrl': '' },
         changeOrigin: true
     },
-    _postPurlUrlByustbhuangyi:{
-      context: '/api/postPurlUrlByustbhuangyi',
-      target:'http://ustbhuangyi.com/music/api/getPurlUrl',
-      headers: {
-        referer: 'http://ustbhuangyi.com/music/',
-        host: 'ustbhuangyi.com'
-      },
-      pathRewrite: { '^/api/postPurlUrlByustbhuangyi': '' },
-      changeOrigin: true
+    _postPurlUrlByustbhuangyi: {
+        context: '/api/postPurlUrlByustbhuangyi',
+        target: 'http://ustbhuangyi.com/music/api/getPurlUrl',
+        headers: {
+            referer: 'http://ustbhuangyi.com/music/',
+            host: 'ustbhuangyi.com'
+        },
+        pathRewrite: { '^/api/postPurlUrlByustbhuangyi': '' },
+        changeOrigin: true
     }
 }
 
@@ -140,10 +140,12 @@ module.exports = {
         // https://vue-loader.vuejs.org/en/options.html#cachebusting
         cacheBusting: true,
 
-        cssSourceMap: true,
+        cssSourceMap: true
     },
 
     build: {
+        env: require('./prod.env'),
+        port: 9000,
         // Template for index.html
         index: path.resolve(__dirname, '../dist/index.html'),
 
