@@ -106,7 +106,7 @@
            :src="currentSong.url"
            @ended="end"
            @timeupdate="updateTime"
-           @canplay="ready"
+           @play="ready"
            @error="error">
     </audio>
 
