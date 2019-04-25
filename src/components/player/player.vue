@@ -397,8 +397,12 @@
               }
               if (this.currentLyric) {
                   this.currentLyric.stop() // Lyric类提供实例方法stop,销毁对象,具体要看文档
+                  this.currentLyric = null
+                  this.currentLineNum = 0
+                  this.playingLyric = ''
               }
-              setTimeout(() => {
+              clearTimeout(this.timer)
+              this.timer = setTimeout(() => {
                   this.$refs.audio.play() // 监听currentSong变化时,audio标签没有立刻渲染,可以使用$nextClick函数，但是用setTimeout更好
                   this.getLyric()
               }, 1000) // 从20改为1000是考虑微信浏览器前后台切换的因素
@@ -459,15 +463,13 @@
         margin 0 auto
         line-height 40px
         text-align center
-        text-overflow ellipsis
-        overflow hidden
-        white-space nowrap
         font-size $font-size-large
         color $color-text
+        no-wrap()
       .subtitle
         line-height 20px
         text-align center
-        font-size: $font-size-medium
+        font-size $font-size-medium
         color $color-text
     .middle
       position fixed
