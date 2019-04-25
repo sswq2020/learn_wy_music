@@ -242,6 +242,10 @@
           },
           next() {
               if (!this.songReady) { return }
+              if (this.playlist.length === 1) {
+                  this.loop()
+                  return
+              }
               let index = this.currentIndex + 1 < this.playlist.length ? this.currentIndex + 1 : 0
               this.setCurrentIndex(index)
               !this.playing && this.togglePlaying() // 如果存在暂停状态,恢复播放状态
@@ -249,6 +253,10 @@
           },
           prev() {
               if (!this.songReady) { return }
+              if (this.playlist.length === 1) {
+                  this.loop()
+                  return
+              }
               let index = (this.currentIndex - 1 > -1) ? this.currentIndex - 1 : this.playlist.length - 1
               this.setCurrentIndex(index)
               !this.playing && this.togglePlaying()
@@ -302,6 +310,9 @@
           },
           async getLyric() {
               const lyric = await (this.currentSong._getLyric()) // _getLyric是封装Class Song创建的实例方法
+              if (this.currentSong.lyric !== lyric) {
+                  return
+              }
               console.log('lyric' + lyric)
               this.currentLyric = new Lyric(lyric, this.handleLyric) // Lyric类第二个参数是回调函数
               if (this.playing) {
