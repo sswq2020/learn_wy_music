@@ -72,9 +72,6 @@ export default {
             this.currentIndex = index
         },
         selectItem(song, index) {
-            if (index === 0) {
-                return
-            }
             this.insertSong(new Song(song)) // song是对象，但是缺少_getLyric方法,通过new Song(song),生成的对象有_getLyric
         },
         selectFavoriteItem(song, index) {
