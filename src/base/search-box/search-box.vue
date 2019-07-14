@@ -37,7 +37,8 @@ export default {
             'query',
             _debounce(newQuery => {
                 this.$emit('query', newQuery)
-            }, 400)
+            }, 400),
+            {deep: true}
         )
     }
 

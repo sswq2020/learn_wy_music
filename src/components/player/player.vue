@@ -42,6 +42,9 @@
                    {{line.txt}}
                 </p>
               </div>
+              <div v-show="isPureMusic" class="pure-music">
+                <p>{{pureMusicLyric}}</p>
+              </div>
             </div>
           </scroll>
         </div>
@@ -103,11 +106,11 @@
     <playlist ref="playlist"></playlist>
     <!--在快速切换音乐,会出现加载不了src的资源,需要对audio的两个事件oncanplay和onerror进行监听-->
     <audio ref="audio"
-           :src="currentSong.url"
-           @ended="end"
+           @playing="ready"
+           @error="error"
            @timeupdate="updateTime"
-           @play="ready"
-           @error="error">
+           @ended="end"
+           @pause="paused">
     </audio>
 
   </div>
@@ -133,16 +136,15 @@
       data() {
           return {
               songReady: false, // <aduio></aduio>里监听oncanplay事件,完成后才可点击
-              currentTime: 0,
-              radius: 32,
-              currentLyric: null,
-              currentLineNum: 0,
+              currentTime: 0, // <audio>里ontimeupdate事件返回 =>  currentTime
+              radius: 32, // 圈圈
+              currentLyric: null, // 当前歌曲的歌词的Lyric实例
+              currentLineNum: 0, // 当前歌曲的歌词的第几行
               currentShow: 'cd',
-              playingLyric: ''
+              playingLyric: '', // 当前歌曲的歌词的第几行的歌词
+              isPureMusic: false,
+              pureMusicLyric: ''
           }
-      },
-      created() {
-          this.touch = {}
       },
       computed: {
           ...mapGetters([
@@ -150,14 +152,14 @@
               'currentIndex',
               'favoriteList'
           ]),
+          cdCls() {
+              return this.playing ? 'play' : 'play pause'
+          },
           playIcon() {
               return this.playing ? 'icon-pause' : 'icon-play'
           },
           miniIcon() {
               return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
-          },
-          cdCls() {
-              return this.playing ? 'play' : 'play pause'
           },
           disableCls() {
               return this.songReady ? '' : 'disable'
@@ -169,6 +171,9 @@
               let index = findIndex(this.favoriteList, this.currentSong)
               return (index > -1) ? 'icon-favorite' : 'icon-not-favorite'
           }
+      },
+      created() {
+          this.touch = {}
       },
       methods: {
           ...mapMutations({
@@ -222,23 +227,19 @@
               this.$refs.cdWrapper.style.transition = ''
               this.$refs.cdWrapper.style[transform] = ''
           },
-          _getPosAndScale() {
-              const targetWidth = 40
-              const paddingLeft = 40
-              const paddingBottom = 30
-              const paddingTop = 80
-              const width = window.innerWidth * 0.8
-              const scale = targetWidth / width
-              const x = -(window.innerWidth / 2 - paddingLeft)
-              const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
-              return {
-                  x, y, scale
-              }
-          },
           togglePlaying() {
-              if (!this.songReady) { return }
-              this.setPlayingState(!this.playing)
+              this.songReady && this.setPlayingState(!this.playing)
               this.currentLyric && this.currentLyric.togglePlay() // Lyric类提供实例方法togglePlay
+          },
+          end() {
+              this.currentTime = 0
+              this.mode === playMode.loop ? this.loop() : this.next()
+          },
+          loop() {
+              this.$refs.audio.currentTime = 0
+              this.$refs.audio.play()
+              this.setPlayingState(false)
+              this.currentLyric && this.currentLyric.seek(0) // Lyric类提供实例方法seek,歌词回到最初
           },
           next() {
               if (!this.songReady) { return }
@@ -249,7 +250,6 @@
               let index = this.currentIndex + 1 < this.playlist.length ? this.currentIndex + 1 : 0
               this.setCurrentIndex(index)
               !this.playing && this.togglePlaying() // 如果存在暂停状态,恢复播放状态
-              this.songReady = false
           },
           prev() {
               if (!this.songReady) { return }
@@ -260,22 +260,21 @@
               let index = (this.currentIndex - 1 > -1) ? this.currentIndex - 1 : this.playlist.length - 1
               this.setCurrentIndex(index)
               !this.playing && this.togglePlaying()
-              this.songReady = false
           },
           ready() {
+              clearTimeout(this.timer)
               this.songReady = true
+              this.canLyricPlay = true
               this.savePlayHistory(this.currentSong)
+              this.currentLyric && !this.isPureMusic && this.currentLyric.seek(1000 * this.currentTime)
+          },
+          paused() {
+              this.setPlayingState(false)
+              this.currentLyric && this.currentLyric.stop()
           },
           error() {
+              clearTimeout(this.timer)
               this.songReady = true
-          },
-          end() {
-              this.mode === playMode.loop ? this.loop() : this.next()
-          },
-          loop() {
-              this.$refs.audio.currentTime = 0
-              this.$refs.audio.play()
-              this.currentLyric && this.currentLyric.seek(0) // Lyric类提供实例方法seek,歌词回到最初
           },
           /**
            * 监听<audio>的ontimeupdate事件
@@ -288,14 +287,6 @@
               const minute = interval / 60 | 0
               const second = this._pad(interval % 60)
               return `${minute}:${second}`
-          },
-          _pad(num, n = 2) {
-              let len = num.toString().length
-              while (len < n) {
-                  num = '0' + num
-                  len++
-              }
-              return num
           },
           /**
            * 监听自定义接受百分比事件,并赋值给<audio>里currentTime属性
@@ -313,13 +304,21 @@
               if (this.currentSong.lyric !== lyric) {
                   return
               }
-              console.log('lyric' + lyric)
               this.currentLyric = new Lyric(lyric, this.handleLyric) // Lyric类第二个参数是回调函数
+              this.isPureMusic = !this.currentLyric.lines.length
+              if (this.isPureMusic) {
+                  this.pureMusicLyric = this.currentLyric.lrc.replace(/\[(\d{2}):(\d{2}):(\d{2})]/g, '').trim()
+                  this.playingLyric = this.pureMusicLyric
+              } else {
+                  this.playing && this.canLyricPlay && this.currentLyric.seek(1000 * this.currentTime)
+              }
+
               if (this.playing) {
                   this.currentLyric.play() // Lyric类提供实例方法play
               }
           },
           handleLyric({lineNum, txt}) {
+              if (!this.$refs.lyricLine) return
               this.currentLineNum = lineNum
               const scrollList = this.$refs.lyricList
               if (lineNum > 5) {
@@ -329,6 +328,30 @@
                   scrollList.scrollTo(0, 0, 1000)
               }
               this.playingLyric = txt
+          },
+          showPlaylist() {
+              this.$refs.playlist.show()
+          },
+          _pad(num, n = 2) {
+              let len = num.toString().length
+              while (len < n) {
+                  num = '0' + num
+                  len++
+              }
+              return num
+          },
+          _getPosAndScale() {
+              const targetWidth = 40
+              const paddingLeft = 40
+              const paddingBottom = 30
+              const paddingTop = 80
+              const width = window.innerWidth * 0.8
+              const scale = targetWidth / width
+              const x = -(window.innerWidth / 2 - paddingLeft)
+              const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
+              return {
+                  x, y, scale
+              }
           },
           middleTouchStart(e) {
               this.touch.flag = true
@@ -391,38 +414,46 @@
               middleLDom.style.opacity = opacity
               middleLDom.style[transitionDuration] = `${time}ms`
           },
-          showPlaylist() {
-              this.$refs.playlist.show()
-          },
           toggleFavorite() {
               this.handleFavoriteSong(this.currentSong)
           }
       },
       watch: {
           currentSong(newSong, oldSong) {
+              let this_ = this
               if (!newSong.id) {
+                  return
+              }
+              if (!newSong.url) {
                   return
               }
               if (newSong.id === oldSong.id) {
                   return
               }
+              this.songReady = false
+              this.canLyricPlay = false
               if (this.currentLyric) {
                   this.currentLyric.stop() // Lyric类提供实例方法stop,销毁对象,具体要看文档
                   this.currentLyric = null
-                  this.currentLineNum = 0
+                  this.currentTime = 0
                   this.playingLyric = ''
+                  this.currentLineNum = 0
               }
+              this.$refs.audio.src = newSong.url
+              this.$refs.audio.play()
               clearTimeout(this.timer)
               this.timer = setTimeout(() => {
-                  this.$refs.audio.play() // 监听currentSong变化时,audio标签没有立刻渲染,可以使用$nextClick函数，但是用setTimeout更好
-                  this.getLyric()
+                  this_.songReady = true
               }, 1000) // 从20改为1000是考虑微信浏览器前后台切换的因素
+              this.getLyric()
           },
           playing(newPlaying) {
-              const audio = this.$refs.audio // 将audio的DOM保存起来
-              setTimeout(() => {
-                  newPlaying ? audio.play() : audio.pause()
-              }, 20)
+              if (this.songReady) {
+                  const audio = this.$refs.audio // 将audio的DOM保存起来
+                  this.$nextTick(() => {
+                      newPlaying ? audio.play() : audio.pause()
+                  })
+              }
           }
       },
       components: {
@@ -542,6 +573,11 @@
           width 80%
           overflow hidden
           text-align center
+          .pure-music
+            padding-top 50%
+            line-height 32px
+            color $color-text-n
+            font-size $font-size-medium
           .text
             line-height 32px
             color $color-text-l
@@ -591,6 +627,9 @@
         .icon
           flex 1
           color $color-theme
+          font-size $font-size-large-z
+          &.disable
+            color $color-theme-d
           &.i-left
             text-align right
           &.i-center

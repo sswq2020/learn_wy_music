@@ -17,7 +17,6 @@ Vue.use(VueLazyload, {
     loading: 'https://y.gtimg.cn/mediastyle/yqq/img/logo@2x.png?nowebp=1',
     attempt: 1
 })
-
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
