@@ -53,7 +53,7 @@ export function postPurlUrl(songmids) {
             method: 'CgiGetVkey',
             module: 'vkey.GetVkeyServer',
             param: {
-                guid: '4029775892',
+                guid: '2915053660',
                 loginflag: 0,
                 platform: '23',
                 uin: '0',

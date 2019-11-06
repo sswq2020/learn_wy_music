@@ -73,12 +73,16 @@ export async function getUrlSongList (songlist) {
 
 export async function getIncludeUrlSongList(songlist) {
     let songUrlList = []
-    let res = await postPurlUrl(getSongMid(songlist, true))
-    if (res.code === 0) {
-        const list = res.req_0.data.midurlinfo
-        list && list.length && list.forEach((item) => {
-            songUrlList.push(item.purl || '')
-        })
+    let flag = false
+    while (!flag) {
+        let res = await postPurlUrl(getSongMid(songlist, true))
+        if (res.code === 0 && res.req_0 && res.req_0.data && res.req_0.data.servercheck) {
+            const list = res.req_0.data.midurlinfo
+            list && list.length && list.forEach((item) => {
+                songUrlList.push(item.purl || '')
+            })
+            flag = true
+        }
     }
     songlist = inSertUrl(songlist, songUrlList, 'url')
     return songlist
