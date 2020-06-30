@@ -61,18 +61,16 @@ export default{
                 scrollX: true,
                 scrollY: false,
                 momentum: false, // 惯性
-                snap: true, // 是否开启捕捉元素，当为 true 时，捕捉的元素会根据可滚动的位置和滚动区域计算得到可滑动几页。
-                snapLoop: this.loop, // 创建当前滚动元素子集的拷贝
-                snapThreshold: 0.3, // 滑动的长度限制，只有大于这个距离才会触发事件
-                snapSpeed: 400,
+                'snap':
+                {
+                    'loop': this.loop,
+                    'threshold': 0.3,
+                    'speed': 400
+                },
                 click: true
             })
             this.slider.on('scrollEnd', () => {
                 let pageIndex = this.slider.getCurrentPage().pageX
-                // 无缝轮播多拷贝一份dom,应该减1
-                if (this.loop) {
-                    pageIndex = pageIndex - 1
-                }
                 this.currentPageIndex = pageIndex
                 // 假如是自动轮播的配置,轮播一张图片后再它下一帧自动播放
                 if (this.autoPlay) {
@@ -85,13 +83,8 @@ export default{
             this.dots = new Array(this.children.length)
         },
         _play() {
-            this.currentPageIndex = this.currentPageIndex + 1
-            // 无缝轮播多拷贝一份dom,应该加1
-            if (this.loop) {
-                this.currentPageIndex = this.currentPageIndex + 1
-            }
             this.timer = setTimeout(() => { // 只轮播一次
-                this.slider.goToPage(this.currentPageIndex, 0, 400)
+                this.slider.next()
             }, this.interval)
         }
     },
